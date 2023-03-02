@@ -6,7 +6,14 @@ from dotenv import load_dotenv
 from slack_bolt.async_app import AsyncApp
 
 from models import SummaryData
-from config import SLACK_BOT_TOKEN, SLACK_SIGNING_SECRET, SUMMARY_TYPES, TARGET_LANGUAGES
+from config import (
+    EMOJI_FLAGS_MAP,
+    EMOJI_NUMBERS_MAP,
+    SLACK_BOT_TOKEN,
+    SLACK_SIGNING_SECRET,
+    SUMMARY_TYPES,
+    TARGET_LANGUAGES,
+)
 
 
 load_dotenv()
@@ -51,13 +58,16 @@ async def file_share(body, say, logger):
         msg_id=msg_id
     )
     
-    await say(f"Scheduled {data.num_tasks} jobs for summarization.")
-    
     # TODO: Send data to the summarization service
 
     await app.client.reactions_add(
         channel=body["event"]["channel"],
-        name="white_check_mark",
+        name=f"{EMOJI_NUMBERS_MAP[data.num_tasks]}",
+        timestamp=body["event"]["ts"]
+    )
+    await app.client.reactions_add(
+        channel=body["event"]["channel"],
+        name=f"{EMOJI_FLAGS_MAP[data.target_lang]}",
         timestamp=body["event"]["ts"]
     )
 
