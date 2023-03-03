@@ -31,7 +31,10 @@ load_dotenv()
 
 class WorcabSlackBot:
     def __init__(self):
-        self.app = AsyncApp(token=SLACK_BOT_TOKEN, signing_secret=SLACK_SIGNING_SECRET)
+        self.slack_bot_token = SLACK_BOT_TOKEN
+        self.app = AsyncApp(
+            token=self.slack_bot_token, signing_secret=SLACK_SIGNING_SECRET
+        )
         
         self.wordcab_api_key = WORDCAB_API_KEY
         
@@ -55,8 +58,7 @@ class WorcabSlackBot:
 
         text, urls, channel, msg_id = await self._extract_info(body)
         summary_length, summary_type, source_lang, delete_job = await self._get_summarization_params(text)
-        
-        
+
         job = JobData(
             summary_length=summary_length,
             source_lang=source_lang,
@@ -67,10 +69,9 @@ class WorcabSlackBot:
         )
         await self._add_job_reactions(job.num_tasks, source_lang, channel, msg_id)
 
-        
-        result = await self._process_job(job)
-        
-        await self._final_reaction(result, channel, msg_id, say)
+        result = await self._process_job(job, channel, msg_id)
+
+        await self._loading_reaction(result, channel, msg_id, say)
 
 
     async def message(self, body, say, logger):
@@ -89,7 +90,7 @@ class WorcabSlackBot:
         urls = [f["url_private_download"] for f in body["event"]["files"]]
         channel = body["event"]["channel"]
         msg_id = body["event"]["ts"]
-        
+
         return text, urls, channel, msg_id
 
 
@@ -148,12 +149,12 @@ class WorcabSlackBot:
         return None
 
 
-    async def _final_reaction(self, result: Dict[str, str], channel: str, msg_id: str, say: callable):
+    async def _loading_reaction(self, result: Dict[str, str], channel: str, msg_id: str, say: callable):
         """Add final reaction to the message about the job status"""
         if result["status"] == "success":
             await self.app.client.reactions_add(
                 channel=channel,
-                name="white_check_mark",
+                name="arrows_counterclockwise",
                 timestamp=msg_id,
             )
         elif result["status"] == "error":
@@ -177,13 +178,16 @@ class WorcabSlackBot:
             )
 
 
-    async def _process_job(self, job: JobData) -> None:
+    async def _process_job(self, job: JobData, channel: str, msg_id: str) -> None:
         """Add the job with tasks to the queue and wait for the job to be done"""
         try:
             new_job = {
                 "done_event": asyncio.Event(),
                 "time": asyncio.get_event_loop().time(),
                 "data": job,
+                "channel": channel,
+                "msg_id": msg_id,
+                "status": "pending",
             }
             async with self.jobs_queue_lock:
                 self.jobs_queue.append(new_job)
@@ -223,7 +227,9 @@ class WorcabSlackBot:
                     job_names = await self._launch_job_tasks(job["data"])
                     job["status"] = "success"
                     for job_name in job_names:
-                        asyncio.create_task(self._monitor_job_status(job_name))
+                        asyncio.create_task(
+                            self._monitor_job_status(job_name, job["channel"], job["msg_id"])
+                        )
                 except Exception as e:
                     job["status"] = "error"
                     job["error"] = str(e)
@@ -249,17 +255,18 @@ class WorcabSlackBot:
     async def _summarization_task(self, url: str, summary_type: str, source_lang: str, summary_lens: List[int]) -> str:
         """Launch a summarization job based on the input parameters and return the job name"""
         file_type = await self._check_file_extension(url.split("/")[-1])
+        url_headers = {"Authorization": f"Bearer {self.slack_bot_token}"}
         
         if file_type == "audio":
-            source = AudioSource(url=url)
+            source = AudioSource(url=url, url_headers=url_headers)
         elif file_type == "generic":
-            source = GenericSource(url=url)
+            source = GenericSource(url=url, url_headers=url_headers)
         else:
             accepted_formats = [f"`{format}`" for format in self.accepted_audio_formats + self.accepted_generic_formats]
             raise Exception(
                 f"Invalid file extension: `{file_type}`\nAccepted formats: {' '.join(accepted_formats)}"
             )
-            
+
         summarize_job = await asyncio.get_event_loop().run_in_executor(
             None, partial(
                 start_summary,
@@ -276,18 +283,26 @@ class WorcabSlackBot:
         return summarize_job.job_name
 
 
-    async def _monitor_job_status(self, job_name: str) -> None:
+    async def _monitor_job_status(self, job_name: str, channel: str, msd_id: str) -> None:
         """Monitor the job status and return the summary_id when the job is done"""
         while True:
             job = await asyncio.get_event_loop().run_in_executor(
                 None, partial(retrieve_job, job_name=job_name, api_key=self.wordcab_api_key)
             )
-            if job.status == "done":
+            if job.job_status == "done":
+                break
+            elif job.job_status == "error":
                 break
             else:
                 await asyncio.sleep(5)
 
-        asyncio.create_task(self._get_summary(job.summary_id))
+        summary = await self._get_summary(job.summary_id)
+        
+        await self.app.client.chat_postMessage(
+            channel=channel,
+            text=f"Summary for {job_name}:\n{summary}",
+            thread_ts=msd_id,
+        )
         
         return None
 
@@ -297,6 +312,8 @@ class WorcabSlackBot:
         summary = await asyncio.get_event_loop().run_in_executor(
             None, partial(retrieve_summary, summary_id=summary_id, api_key=self.wordcab_api_key)
         )
+        
+        print(summary.summary)
         
         return summary.summary
 
@@ -311,12 +328,3 @@ class WorcabSlackBot:
             return "generic"
 
         return file_extension
-
-
-    async def _download_file_from_slack(
-        self, session: aiohttp.ClientSession, url: str, headers: Dict[str, str] = {}
-    ) -> bytes:
-        async with session.get(url, headers=headers) as response:
-            file_content = await response.read()
-
-        return file_content
