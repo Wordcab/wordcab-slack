@@ -14,7 +14,7 @@ python-dotenv = ">=1.0.0"
 slack-bolt = ">=1.16.2"
 slackeventsapi = ">=3.0.1"
 uvicorn = ">=0.20.0"
-wordcab = ">=0.5.1"
+wordcab = ">=0.5.2"
 
 
 [build-system]
