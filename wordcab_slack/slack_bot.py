@@ -10,9 +10,9 @@ from typing import Dict, List
 
 from slack_bolt.async_app import AsyncApp
 
-from wordcab import start_summary
+from wordcab import start_summary, retrieve_job, retrieve_summary
 from wordcab.config import AVAILABLE_AUDIO_FORMATS, AVAILABLE_GENERIC_FORMATS
-from wordcab.core_objects import GenericSource, AudioSource, InMemorySource
+from wordcab.core_objects import GenericSource, AudioSource
 
 from models import JobData
 from config import (
@@ -222,20 +222,21 @@ class WorcabSlackBot:
                 try:
                     job_names = await self._launch_job_tasks(job["data"])
                     job["status"] = "success"
-                    print(f"Job {job_names} done")
-                    del job_batch
+                    for job_name in job_names:
+                        asyncio.create_task(self._monitor_job_status(job_name))
                 except Exception as e:
                     job["status"] = "error"
                     job["error"] = str(e)
                 finally:
                     job["done_event"].set()
+            del job_batch
 
 
     async def _launch_job_tasks(self, job: JobData) -> None:
         """Process the job"""
         async with aiohttp.ClientSession() as session:
             tasks = [
-                self._summarization_task(session, url, summary_type, job.source_lang, job.summary_length)
+                self._summarization_task(url, summary_type, job.source_lang, job.summary_length)
                 for summary_type in job.summary_type
                 for url in job.urls
             ]
@@ -245,9 +246,7 @@ class WorcabSlackBot:
         return job_names
 
 
-    async def _summarization_task(
-        self, session: aiohttp.ClientSession, url: str, summary_type: str, source_lang: str, summary_lens: List[int]
-    ) -> str:
+    async def _summarization_task(self, url: str, summary_type: str, source_lang: str, summary_lens: List[int]) -> str:
         """Launch a summarization job based on the input parameters and return the job name"""
         file_type = await self._check_file_extension(url.split("/")[-1])
         
@@ -275,6 +274,31 @@ class WorcabSlackBot:
         )
 
         return summarize_job.job_name
+
+
+    async def _monitor_job_status(self, job_name: str) -> None:
+        """Monitor the job status and return the summary_id when the job is done"""
+        while True:
+            job = await asyncio.get_event_loop().run_in_executor(
+                None, partial(retrieve_job, job_name=job_name, api_key=self.wordcab_api_key)
+            )
+            if job.status == "done":
+                break
+            else:
+                await asyncio.sleep(5)
+
+        asyncio.create_task(self._get_summary(job.summary_id))
+        
+        return None
+
+    
+    async def _get_summary(self, summary_id: str) -> str:
+        """Get the summary from the summary_id"""
+        summary = await asyncio.get_event_loop().run_in_executor(
+            None, partial(retrieve_summary, summary_id=summary_id, api_key=self.wordcab_api_key)
+        )
+        
+        return summary.summary
 
 
     async def _check_file_extension(self, filename: str) -> str:
