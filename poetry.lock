@@ -925,14 +925,14 @@ watchdog = ["watchdog"]
 
 [[package]]
 name = "wordcab"
-version = "0.5.1"
+version = "0.5.2"
 description = "Wordcab Python SDK"
 category = "main"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "wordcab-0.5.1-py3-none-any.whl", hash = "sha256:f211edb82c425f0e468938bbc9fcd328dc9025fbb285b2ccc04fb745cfbfaf04"},
-    {file = "wordcab-0.5.1.tar.gz", hash = "sha256:f0d9125432ba4260b4e1cdbc79c18ccda2807e5edd04b4d58881d6f406d637cd"},
+    {file = "wordcab-0.5.2-py3-none-any.whl", hash = "sha256:4a3d507d2cb8661bd49c2eee10c25e0e13bcce85379be9ea56c38253831f8728"},
+    {file = "wordcab-0.5.2.tar.gz", hash = "sha256:9ed8dfb7575954b8e9f740a0291ce9f88ca8483307692e5aef37f065fa69bc52"},
 ]
 
 [package.dependencies]
@@ -1031,4 +1031,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<4.0"
-content-hash = "455071853b6424689de4019305df3a4b12bcb3e07098571c798c12189d9eb25a"
+content-hash = "853e861c201cc510640f3e4f4b6d82fe1dac5b6ecd0edb7f2ca10bf889a53502"
