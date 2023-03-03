@@ -9,12 +9,12 @@ packages = [{include = "wordcab_slack"}]
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
 aiohttp = ">=3.8.4"
+fastapi = ">=0.92.0"
 python-dotenv = ">=1.0.0"
 slack-bolt = ">=1.16.2"
 slackeventsapi = ">=3.0.1"
-wordcab = ">=0.4.2"
-fastapi = "^0.92.0"
-uvicorn = "^0.20.0"
+uvicorn = ">=0.20.0"
+wordcab = ">=0.5.1"
 
 
 [build-system]
