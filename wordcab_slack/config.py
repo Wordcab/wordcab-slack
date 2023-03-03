@@ -18,7 +18,8 @@ EMOJI_FLAGS_MAP = {
 EMOJI_NUMBERS_MAP = {
     1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine", 10: "ten",
 }
+LANGUAGES = ["en", "fr", "de", "es", "it", "nl", "sv"]
 SLACK_BOT_TOKEN = os.getenv("SLACK_BOT_TOKEN")
 SLACK_SIGNING_SECRET = os.getenv("SLACK_SIGNING_SECRET")
 SUMMARY_TYPES = ["narrative", "conversational", "no_speaker", "reason_conclusion"]
-TARGET_LANGUAGES = ["en", "fr", "de", "es", "it", "nl", "sv"]
+WORDCAB_API_KEY = os.getenv("WORDCAB_API_KEY")
