@@ -70,8 +70,18 @@ class WorcabSlackBot:
         await self._add_job_reactions(job.num_tasks, source_lang, channel, msg_id)
 
         result = await self._process_job(job, channel, msg_id)
+        job_names = result["job_names"]
+        status = result["status"]
 
-        await self._loading_reaction(result, channel, msg_id, say)
+        await self._loading_reaction(status, channel, msg_id, say)
+        
+        tasks = [self._monitor_job_status(job_name) for job_name in job_names]
+        summary_ids = await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
+        
+        for summary_id in summary_ids:
+            summary = await self._get_summary(summary_id)
+            await self._post_summary(summary, channel, msg_id, say)
+        
 
 
     async def message(self, body, say, logger):
@@ -169,6 +179,23 @@ class WorcabSlackBot:
             )
 
 
+    async def _final_checking_reaction(self, channel: str, msg_id: str):
+        """Add final reaction to the message about the job status"""
+        await self.app.client.reactions_add(
+            channel=channel,
+            name="white_check_mark",
+            timestamp=msg_id,
+        )
+
+
+    async def _post_summary(self, summary: str, channel: str, msg_id: str, say: callable):
+        """Post the summary to the channel"""
+        await say(
+            text=summary,
+            thread_ts=msg_id,
+        )
+
+
     def schedule_processing_if_needed(self):
         if len(self.jobs_queue) >= self.max_batch_size:
             self.needs_processing.set()
@@ -196,7 +223,7 @@ class WorcabSlackBot:
             await new_job["done_event"].wait()
             
             if new_job["status"] == "success":
-                return {"status": "success"}
+                return {"status": "success", "job_names": new_job["job_names"]}
             elif new_job["status"] == "error":
                 return {"status": "error", "error": new_job["error"]}
 
@@ -226,10 +253,7 @@ class WorcabSlackBot:
                 try:
                     job_names = await self._launch_job_tasks(job["data"])
                     job["status"] = "success"
-                    for job_name in job_names:
-                        asyncio.create_task(
-                            self._monitor_job_status(job_name, job["channel"], job["msg_id"])
-                        )
+                    job["job_names"] = job_names
                 except Exception as e:
                     job["status"] = "error"
                     job["error"] = str(e)
@@ -240,14 +264,12 @@ class WorcabSlackBot:
 
     async def _launch_job_tasks(self, job: JobData) -> None:
         """Process the job"""
-        async with aiohttp.ClientSession() as session:
-            tasks = [
-                self._summarization_task(url, summary_type, job.source_lang, job.summary_length)
-                for summary_type in job.summary_type
-                for url in job.urls
-            ]
-            
-            job_names = await asyncio.gather(*tasks)
+        tasks = [
+            self._summarization_task(url, summary_type, job.source_lang, job.summary_length)
+            for summary_type in job.summary_type
+            for url in job.urls
+        ]
+        job_names = await asyncio.gather(*tasks)
             
         return job_names
 
@@ -283,7 +305,7 @@ class WorcabSlackBot:
         return summarize_job.job_name
 
 
-    async def _monitor_job_status(self, job_name: str, channel: str, msd_id: str) -> None:
+    async def _monitor_job_status(self, job_name: str) -> str:
         """Monitor the job status and return the summary_id when the job is done"""
         while True:
             job = await asyncio.get_event_loop().run_in_executor(
@@ -295,16 +317,8 @@ class WorcabSlackBot:
                 break
             else:
                 await asyncio.sleep(5)
-
-        summary = await self._get_summary(job.summary_id)
         
-        await self.app.client.chat_postMessage(
-            channel=channel,
-            text=f"Summary for {job_name}:\n{summary}",
-            thread_ts=msd_id,
-        )
-        
-        return None
+        return job.summary_id
 
     
     async def _get_summary(self, summary_id: str) -> str:
@@ -312,8 +326,6 @@ class WorcabSlackBot:
         summary = await asyncio.get_event_loop().run_in_executor(
             None, partial(retrieve_summary, summary_id=summary_id, api_key=self.wordcab_api_key)
         )
-        
-        print(summary.summary)
         
         return summary.summary
 
