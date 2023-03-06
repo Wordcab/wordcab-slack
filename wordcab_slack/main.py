@@ -10,7 +10,7 @@ from slack_bolt.adapter.fastapi.async_handler import AsyncSlackRequestHandler
 from slack_bot import WorcabSlackBot
 
 
-api = FastAPI()
+api = FastAPI(title="Wordcab Slack Bot", version="1.0.0")
 bot = WorcabSlackBot()
 app_handler = AsyncSlackRequestHandler(bot.app)
 
@@ -21,12 +21,12 @@ async def startup():
     asyncio.create_task(bot.runner())
 
 
-@api.post("/slack/events")
+@api.post("/slack/events", tags=["slack"])
 async def endpoint(req: Request):
     return await app_handler.handle(req)
 
 
-@api.get("/health")
+@api.get("/health", tags=["status"])
 async def health():
     return {"status": "ok"}
 
