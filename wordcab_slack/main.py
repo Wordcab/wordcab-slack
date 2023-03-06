@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
     uvicorn.run(
         "wordcab_slack.main:api",
-        host="0.0.0.0",
+        host="0.0.0.0",  # noqa: S104
         port=8000,
         log_level="info",
         reload=True,

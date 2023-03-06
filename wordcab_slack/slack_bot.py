@@ -6,9 +6,9 @@ import io
 import re
 from ast import literal_eval
 from functools import partial
-from loguru import logger as log
 from typing import Dict, List, Tuple, Union
 
+from loguru import logger as log
 from slack_bolt.async_app import AsyncApp
 from wordcab import retrieve_job, retrieve_summary, start_summary
 from wordcab.config import AVAILABLE_AUDIO_FORMATS, AVAILABLE_GENERIC_FORMATS
@@ -32,8 +32,10 @@ from wordcab_slack.models import JobData
 
 
 class WorcabSlackBot:
+    """Slack bot for Wordcab summarization service."""
+
     def __init__(self) -> None:
-        """Slack bot for Wordcab summarization service."""
+        """Initialize the bot."""
         self.slack_bot_token = SLACK_BOT_TOKEN
         self.wordcab_api_key = WORDCAB_API_KEY
         self.app = AsyncApp(
@@ -127,7 +129,7 @@ class WorcabSlackBot:
                                 channel=body["event"]["channel"],
                                 ts=reply["ts"],
                             )
-                except Exception as e:
+                except Exception:  # noqa: S110
                     pass  # Allow to ignore message deletion not related to the thread replies from the bot
 
     async def message(self, body, say, logger):
@@ -140,7 +142,7 @@ class WorcabSlackBot:
             logger (Callable): The logger function to log errors
         """
         if "text" in body["event"]:
-            if f"<@U04RVRJJN86>" in body["event"]["text"]:
+            if "<@U04RVRJJN86>" in body["event"]["text"]:
                 await say(self.bot_description)
         else:
             pass
@@ -474,6 +476,9 @@ class WorcabSlackBot:
             summary_type (str): The type of summary to generate
             source_lang (str): The language of the source file
             summary_lens (List[int]): The list of summary lengths to generate
+
+        Exceptions:
+            Exception: If the file extension is not supported
 
         Returns:
             str: The job name of the summarization job launched

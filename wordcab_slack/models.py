@@ -18,5 +18,6 @@ class JobData(BaseModel):
     num_tasks: Optional[int] = None
 
     def __init__(self, **data):
+        """Set the number of tasks to be run."""
         super().__init__(**data)
         self.num_tasks = len(self.urls) * len(self.summary_type)

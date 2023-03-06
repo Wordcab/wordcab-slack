@@ -1,18 +1,32 @@
 # Copyright (c) 2023, The Wordcab team. All rights reserved.
 """Tests for config.py file."""
 
-try:
-    from wordcab_slack.config import (
-        EMOJI_FLAGS_MAP,
-        EMOJI_NUMBERS_MAP,
-        LANGUAGES,
-        SLACK_BOT_TOKEN,
-        SLACK_SIGNING_SECRET,
-        SUMMARY_TYPES,
-        WORDCAB_API_KEY,
-    )
-except ImportError:
-    raise ImportError("Please create a .env file in the root directory of the project.")
+import os
+
+from wordcab_slack.config import (
+    EMOJI_FLAGS_MAP,
+    EMOJI_NUMBERS_MAP,
+    LANGUAGES,
+    SLACK_BOT_TOKEN,
+    SLACK_SIGNING_SECRET,
+    SUMMARY_TYPES,
+    WORDCAB_API_KEY,
+)
+
+
+def test_slack_bot_token():
+    """Test the SLACK_BOT_TOKEN constant."""
+    assert SLACK_BOT_TOKEN == os.getenv("SLACK_BOT_TOKEN")
+
+
+def test_slack_signing_secret():
+    """Test the SLACK_SIGNING_SECRET constant."""
+    assert SLACK_SIGNING_SECRET == os.getenv("SLACK_SIGNING_SECRET")
+
+
+def test_wordcab_api_key():
+    """Test the WORDCAB_API_KEY constant."""
+    assert WORDCAB_API_KEY == os.getenv("WORDCAB_API_KEY")
 
 
 def test_languages():
