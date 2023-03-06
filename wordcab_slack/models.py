@@ -1,4 +1,5 @@
 # Copyright (c) 2023, The Wordcab team. All rights reserved.
+"""API models for the wordcab_slack package."""
 
 from typing import List, Optional
 
@@ -6,7 +7,7 @@ from pydantic import BaseModel
 
 
 class JobData(BaseModel):
-    """Summary data for launching the summary jobs"""
+    """Summary data for launching the summary jobs."""
 
     summary_length: List[int]
     summary_type: List[str]

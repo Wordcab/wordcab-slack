@@ -1,4 +1,5 @@
 # Copyright (c) 2023, The Wordcab team. All rights reserved.
+"""Tests for config.py file."""
 
 try:
     from wordcab_slack.config import (
@@ -15,6 +16,7 @@ except ImportError:
 
 
 def test_languages():
+    """Test the LANGUAGES constant."""
     assert isinstance(LANGUAGES, list)
     assert len(LANGUAGES) > 0
     assert len(LANGUAGES) == 7
@@ -28,6 +30,7 @@ def test_languages():
 
 
 def test_emoji_flags_map():
+    """Test the EMOJI_FLAGS_MAP constant."""
     assert isinstance(EMOJI_FLAGS_MAP, dict)
     assert len(EMOJI_FLAGS_MAP) > 0
     assert len(EMOJI_FLAGS_MAP) == len(LANGUAGES)
@@ -37,6 +40,7 @@ def test_emoji_flags_map():
 
 
 def test_emoji_numbers_map():
+    """Test the EMOJI_NUMBERS_MAP constant."""
     assert isinstance(EMOJI_NUMBERS_MAP, dict)
     assert len(EMOJI_NUMBERS_MAP) > 0
     assert len(EMOJI_NUMBERS_MAP) == 10
@@ -53,6 +57,7 @@ def test_emoji_numbers_map():
 
 
 def test_summary_types():
+    """Test the SUMMARY_TYPES constant."""
     assert isinstance(SUMMARY_TYPES, list)
     assert len(SUMMARY_TYPES) > 0
     assert len(SUMMARY_TYPES) == 4

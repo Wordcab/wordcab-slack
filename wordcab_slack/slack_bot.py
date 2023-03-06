@@ -1,10 +1,12 @@
 # Copyright (c) 2023, The Wordcab team. All rights reserved.
+"""Slack bot for Wordcab summarization service."""
 
 import asyncio
 import io
 import re
 from ast import literal_eval
 from functools import partial
+from loguru import logger as log
 from typing import Dict, List, Tuple, Union
 
 from slack_bolt.async_app import AsyncApp
@@ -423,6 +425,7 @@ class WorcabSlackBot:
                     )
                 else:
                     longest_wait = None
+                log.debug(f"Longest wait: {longest_wait}")
                 job_batch = self.jobs_queue[: self.max_batch_size]
                 del self.jobs_queue[: self.max_batch_size]
                 self.schedule_processing_if_needed()
@@ -534,7 +537,7 @@ class WorcabSlackBot:
 
     async def _get_summary(self, summary_id: str) -> BaseSummary:
         """
-        Get the summary from the summary_id
+        Get the summary from the summary_id.
 
         Args:
             summary_id (str): The summary_id to get the summary from

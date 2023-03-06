@@ -1,4 +1,5 @@
 # Copyright (c) 2023, The Wordcab team. All rights reserved.
+"""Tests for models.py file."""
 
 import pytest
 
@@ -7,6 +8,7 @@ from wordcab_slack.models import JobData
 
 @pytest.fixture
 def valid_data():
+    """Fixture for valid job."""
     return {
         "summary_length": [100, 200],
         "summary_type": ["text", "audio"],
@@ -19,6 +21,7 @@ def valid_data():
 
 @pytest.fixture
 def invalid_urls():
+    """Fixture for invalid urls"""
     return {
         "summary_length": [100, 200],
         "summary_type": ["text", "audio"],
@@ -31,6 +34,7 @@ def invalid_urls():
 
 @pytest.fixture
 def invalid_summary_type():
+    """Fixture for invalid summary type"""
     return {
         "summary_length": [100, 200],
         "summary_type": "text",
@@ -43,6 +47,7 @@ def invalid_summary_type():
 
 @pytest.fixture
 def invalid_summary_length():
+    """Fixture for invalid summary length."""
     return {
         "summary_length": 100,
         "summary_type": ["text", "audio"],
@@ -54,6 +59,7 @@ def invalid_summary_length():
 
 
 def test_valid_job_data(valid_data):
+    """Test valid job data."""
     job_data = JobData(**valid_data)
     assert job_data.summary_length == [100, 200]
     assert job_data.summary_type == ["text", "audio"]
@@ -65,15 +71,18 @@ def test_valid_job_data(valid_data):
 
 
 def test_invalid_urls(invalid_urls):
+    """Test invalid urls."""
     with pytest.raises(ValueError):
         JobData(**invalid_urls)
 
 
 def test_invalid_summary_type(invalid_summary_type):
+    """Test invalid summary type."""
     with pytest.raises(ValueError):
         JobData(**invalid_summary_type)
 
 
 def test_invalid_summary_length(invalid_summary_length):
+    """Test invalid summary length."""
     with pytest.raises(ValueError):
         JobData(**invalid_summary_length)
