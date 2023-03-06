@@ -477,7 +477,7 @@ class WorcabSlackBot:
             source_lang (str): The language of the source file
             summary_lens (List[int]): The list of summary lengths to generate
 
-        Exceptions:
+        Raises:
             Exception: If the file extension is not supported
 
         Returns:

@@ -34,6 +34,7 @@ def activate_virtualenv_in_precommit_hooks(session: Session) -> None:
     This function patches git hooks installed by pre-commit to activate the
     session's virtual environment. This allows pre-commit to locate hooks in
     that environment when invoked from git.
+
     Args:
         session: The Session object.
     """
