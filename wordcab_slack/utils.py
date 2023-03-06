@@ -9,7 +9,12 @@ from functools import partial
 from typing import Dict, List, Tuple
 
 from wordcab import delete_job, retrieve_job, retrieve_summary, start_summary
-from wordcab.core_objects import AudioSource, BaseSummary, GenericSource, StructuredSummary
+from wordcab.core_objects import (
+    AudioSource,
+    BaseSummary,
+    GenericSource,
+    StructuredSummary,
+)
 
 from wordcab_slack.models import JobData
 
@@ -39,6 +44,7 @@ async def _check_file_extension(
 
     return file_extension
 
+
 async def delete_finished_jobs(job_names: List[str], api_key: str) -> None:
     """
     Delete the job from wordcab.
@@ -52,6 +58,7 @@ async def delete_finished_jobs(job_names: List[str], api_key: str) -> None:
             None,
             partial(delete_job, job_name=job_name, api_key=api_key),
         )
+
 
 async def extract_info(body: Dict[str, str]) -> Tuple[str, List[str], str, str]:
     """
@@ -69,6 +76,7 @@ async def extract_info(body: Dict[str, str]) -> Tuple[str, List[str], str, str]:
     msg_id = body["event"]["ts"]
 
     return text, urls, channel, msg_id
+
 
 async def format_files_to_upload(
     summary: Dict[str, Dict[str, List[StructuredSummary]]]
@@ -91,9 +99,7 @@ async def format_files_to_upload(
             {
                 "filename": f"{summary_type}_{key}_{summary_id}.txt",
                 "file": io.StringIO(
-                    " ".join(
-                        [summary.summary for summary in val["structured_summary"]]
-                    )
+                    " ".join([summary.summary for summary in val["structured_summary"]])
                 ),
                 "title": f"{summary_type}_{key}_{summary_id}",
                 "alt_text": f"Summary {summary_id} of type {summary_type} with a length of {key}.",
@@ -102,6 +108,7 @@ async def format_files_to_upload(
         )
 
     return file_uploads
+
 
 async def _get_file_names(urls: List[str]) -> List[str]:
     """
@@ -114,6 +121,7 @@ async def _get_file_names(urls: List[str]) -> List[str]:
         List[str]: The list of file names
     """
     return [url.split("/")[-1] for url in urls]
+
 
 async def get_summarization_params(
     text: str, available_summary_types: List[str], available_languages: List[str]
@@ -151,6 +159,7 @@ async def get_summarization_params(
 
     return summary_length, summary_type, source_lang, literal_eval(delete_job)
 
+
 async def get_summary(summary_id: str, api_key: str) -> BaseSummary:
     """
     Get the summary from the summary_id.
@@ -164,12 +173,11 @@ async def get_summary(summary_id: str, api_key: str) -> BaseSummary:
     """
     summary = await asyncio.get_event_loop().run_in_executor(
         None,
-        partial(
-            retrieve_summary, summary_id=summary_id, api_key=api_key
-        ),
+        partial(retrieve_summary, summary_id=summary_id, api_key=api_key),
     )
 
     return summary
+
 
 async def _launch_job_tasks(
     job: JobData,
@@ -209,6 +217,7 @@ async def _launch_job_tasks(
 
     return job_names
 
+
 async def monitor_job_status(job_name: str, api_key: str) -> str:
     """
     Monitor the job status and return the summary_id when the job is done.
@@ -233,6 +242,7 @@ async def monitor_job_status(job_name: str, api_key: str) -> str:
             await asyncio.sleep(5)
 
     return job.summary_details["summary_id"]
+
 
 async def _summarization_task(
     url: str,
@@ -264,7 +274,7 @@ async def _summarization_task(
         str: The job name of the summarization job launched
     """
     file_type = await _check_file_extension(
-        filename= url.split("/")[-1],
+        filename=url.split("/")[-1],
         accepted_audio_formats=accepted_audio_formats,
         accepted_generic_formats=accepted_generic_formats,
     )
@@ -276,7 +286,8 @@ async def _summarization_task(
         source = GenericSource(url=url, url_headers=url_headers)
     else:
         accepted_formats = [
-            f"`{accepted_format}`" for accepted_format in accepted_audio_formats + accepted_generic_formats
+            f"`{accepted_format}`"
+            for accepted_format in accepted_audio_formats + accepted_generic_formats
         ]
         raise Exception(
             f"Invalid file extension: `{file_type}`\nAccepted formats: {' '.join(accepted_formats)}"

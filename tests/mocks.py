@@ -6,5 +6,6 @@ from asyncio import AbstractEventLoop
 
 class MockEventLoop(AbstractEventLoop):
     """Mock event loop for testing."""
+
     def run_in_executor(self, executor, func, *args):
         return executor.submit(func, *args)

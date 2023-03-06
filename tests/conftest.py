@@ -1,8 +1,9 @@
 # Copyright (c) 2023, The Wordcab team. All rights reserved.
 """Conftest for the wordcab_slack package tests."""
 
-import pytest
 from unittest.mock import AsyncMock, MagicMock
+
+import pytest
 
 
 @pytest.fixture
