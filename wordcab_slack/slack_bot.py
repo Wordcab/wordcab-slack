@@ -5,13 +5,13 @@ import io
 import re
 from ast import literal_eval
 from functools import partial
-from typing import Dict, List, Optional
+from typing import Dict, List, Tuple, Union
 
 from slack_bolt.async_app import AsyncApp
 
 from wordcab import start_summary, retrieve_job, retrieve_summary
 from wordcab.config import AVAILABLE_AUDIO_FORMATS, AVAILABLE_GENERIC_FORMATS
-from wordcab.core_objects import GenericSource, AudioSource, StructuredSummary
+from wordcab.core_objects import BaseSummary, GenericSource, AudioSource, StructuredSummary
 
 from models import JobData
 from config import (
@@ -26,20 +26,24 @@ from config import (
 
 
 class WorcabSlackBot:
-    def __init__(self):
+    def __init__(self) -> None:
+        """Slack bot for Wordcab summarization service."""
         self.slack_bot_token = SLACK_BOT_TOKEN
+        self.wordcab_api_key = WORDCAB_API_KEY
         self.app = AsyncApp(
             token=self.slack_bot_token, signing_secret=SLACK_SIGNING_SECRET
         )
         
-        self.wordcab_api_key = WORDCAB_API_KEY
-        
+        with open("bot-description.txt", "r") as f:
+            self.bot_description = f.read()
+
         self.app.event({"type": "message", "subtype": "file_share"})(self.file_share)
+        self.app.event({"type": "message", "subtype": "message_changed"})(self.message_changed)
         self.app.event("message")(self.message)
-        
+
         self.accepted_audio_formats = AVAILABLE_AUDIO_FORMATS
         self.accepted_generic_formats = AVAILABLE_GENERIC_FORMATS
-        
+
         # Multi requests support
         self.jobs_queue = []
         self.jobs_queue_lock = asyncio.Lock()
@@ -49,8 +53,15 @@ class WorcabSlackBot:
         self.max_wait_time = 1
 
 
-    async def file_share(self, body, say, logger):
-        """Summarize the file and post the summary"""
+    async def file_share(self, body, say, logger) -> None:
+        """
+        Summarize the file and post the summary.
+
+        Args:
+            body (Dict[str, str]): The Slack event body
+            say (Callable): The say function to post the summary
+            logger (Callable): The logger function to log errors
+        """
         # Wrap the function in a try/except block to catch any errors
         try:
             text, urls, channel, msg_id = await self._extract_info(body)
@@ -80,27 +91,61 @@ class WorcabSlackBot:
             for completed_task in asyncio.as_completed(tasks):
                 result = await completed_task
                 summary = await self._get_summary(result)
-                await self._post_summary(summary, channel, msg_id, say)
+                await self._post_summary(summary, channel, msg_id)
 
             await self._final_checking_reaction(channel, msg_id)
+
         except Exception as e:
             await self._error_reaction(channel, msg_id, say, str(e))
 
 
+    async def message_changed(self, body, say, logger):
+        """Delete the responses to the deleted message if any exist from the bot."""
+        if "subtype" in body["event"]["message"]:
+            if body["event"]["message"]["subtype"] == "tombstone":
+                try:
+                    replies = await self.app.client.conversations_replies(
+                        channel=body["event"]["channel"],
+                        ts=body["event"]["previous_message"]["ts"],
+                        limit=1000,
+                        inclusive=True,
+                    )
+                    for reply in replies["messages"]:
+                        if reply["user"] == "U04RVRJJN86":
+                            await self.app.client.chat_delete(
+                                channel=body["event"]["channel"],
+                                ts=reply["ts"],
+                            )
+                except Exception as e:
+                    pass  # Allow to ignore message deletion not related to the thread replies from the bot
+                
+
     async def message(self, body, say, logger):
-        """Watch for messages"""
-        if f"<@U04RVRJJN86>" in body["event"]["text"]:
-            await say(
-                """
-                    Hi there! 🤗\n\nI'm your new Summarization assistant. Post any files in this channel and I'll summarize them for you.\n\nTo choose the summarization parameters, use the following syntax:\n\n`[summary_length] [summary_type] [source_lang] [delete_job]`\n\ne.g. `2 narrative True` or `1,3,5 no_speaker False` or `1 3 5 conversational fr`\n\n_Note that the order of the parameters doesn't matter._\n\n*Default Parameters if not specified:*\n- summary_length: `1,3,5`\n- summary_type: `narrative`\n- source_lang: `en`\n- delete_job: `True`
-                """
-            )
-        else: 
+        """
+        Watch for messages.
+        
+        Args:
+            body (Dict[str, str]): The Slack event body
+            say (Callable): The say function to post the summary
+            logger (Callable): The logger function to log errors
+        """
+        if "text" in body["event"]:
+            if f"<@U04RVRJJN86>" in body["event"]["text"]:
+                await say(self.bot_description)
+        else:
             pass
 
 
-    async def _extract_info(self, body: Dict[str, str]):
-        """Extract the information from the Slack event body"""
+    async def _extract_info(self, body: Dict[str, str]) -> Tuple[str, List[str], str, str]:
+        """
+        Extract the information from the Slack event body.
+
+        Args:
+            body (Dict[str, str]): The Slack event body
+
+        Returns:
+            Tuple[str, List[str], str, str]: The text, urls, channel and message id
+        """
         text = body["event"]["text"]
         urls = [f["url_private_download"] for f in body["event"]["files"]]
         channel = body["event"]["channel"]
@@ -109,8 +154,16 @@ class WorcabSlackBot:
         return text, urls, channel, msg_id
 
 
-    async def _get_summarization_params(self, text: str):
-        """Extract the summarization parameters from the Slack event text"""
+    async def _get_summarization_params(self, text: str) -> Tuple[List[int], List[str], str, bool]:
+        """
+        Extract the summarization parameters from the Slack event text.
+
+        Args:
+            text (str): The Slack event text
+
+        Returns:
+            Tuple[List[int], List[str], str, bool]: The summary length, summary type, source language and delete job
+        """
         summary_length = list(set([int(s) for s in re.findall(r'\d+', text) if int(s) <= 5]))
         if not summary_length:
             summary_length = [1, 3, 5]
@@ -122,20 +175,28 @@ class WorcabSlackBot:
         source_lang = list(set([s for s in text.split() if s in LANGUAGES]))
         if not source_lang:
             source_lang = "en"
-        elif len(source_lang) > 1:
+        if len(source_lang) > 1:
             source_lang = source_lang[0]
-        
+     
         delete_job = re.findall(r'True|False|true|false', text)
         if not delete_job:
             delete_job = "True"
         elif len(delete_job) > 1:
             delete_job = delete_job[0]
+
         return summary_length, summary_type, source_lang, literal_eval(delete_job)
             
 
     async def _add_job_reactions(self, num_tasks: int, source_lang: str, channel: str, msg_id: str) -> None:
-
-        """Add reactions to the message to indicate the number of jobs and the source language"""
+        """
+        Add reactions to the message to indicate the number of jobs and the source language.
+        
+        Args:
+            num_tasks (int): The number of tasks to be executed
+            source_lang (str): The source language
+            channel (str): The channel id
+            msg_id (str): The message id
+        """
         if num_tasks > 10:
             await self.app.client.reactions_add(
                 channel=channel,
@@ -160,24 +221,34 @@ class WorcabSlackBot:
             channel=channel,
             timestamp=msg_id,
         )
+
+
+    async def _loading_reaction(self, channel: str, msg_id: str) -> None:
+        """
+        Add a loading reaction to the message to indicate that the job is in progress.
         
-        return None
-
-
-    async def _loading_reaction(self, channel: str, msg_id: str):
-        """Add a loading reaction to the message to indicate that the job is in progress"""
+        Args:
+            channel (str): The channel id
+            msg_id (str): The message id
+        """
         await self.app.client.reactions_add(
             channel=channel,
-            name="arrows_counterclockwise",
+            name="hourglass_flowing_sand",
             timestamp=msg_id,
         )
 
 
-    async def _final_checking_reaction(self, channel: str, msg_id: str):
-        """Add final reaction to the message about the job status"""
+    async def _final_checking_reaction(self, channel: str, msg_id: str) -> None:
+        """
+        Add final reaction to the message to indicate that the job is done.
+        
+        Args:
+            channel (str): The channel id
+            msg_id (str): The message id
+        """
         await self.app.client.reactions_remove(
             channel=channel,
-            name="arrows_counterclockwise",
+            name="hourglass_flowing_sand",
             timestamp=msg_id,
         )
         await self.app.client.reactions_add(
@@ -187,17 +258,26 @@ class WorcabSlackBot:
         )
 
 
-    async def _error_reaction(self, channel: str, msg_id: str, say: callable, error: str):
-        """Add error reaction to the message about the job status"""
-        reactions_obj = await self.app.client.reactions_get(channel=channel, timestamp=msg_id)
-        reactions = [reaction["name"] for reaction in reactions_obj["message"]["reactions"]]
+    async def _error_reaction(self, channel: str, msg_id: str, say: callable, error: str) -> None:
+        """
+        Add an error reaction to the message to indicate that the job failed.
 
-        if "arrows_counterclockwise" in reactions:
-            await self.app.client.reactions_remove(
-                channel=channel,
-                name="arrows_counterclockwise",
-                timestamp=msg_id,
-            )
+        Args:
+            channel (str): The channel id
+            msg_id (str): The message id
+            say (callable): The say function
+            error (str): The error message
+        """
+        reactions_obj = await self.app.client.reactions_get(channel=channel, timestamp=msg_id)
+        if "reactions" in reactions_obj["message"]:
+            reactions = [reaction["name"] for reaction in reactions_obj["message"]["reactions"]]
+
+            if "hourglass_flowing_sand" in reactions:
+                await self.app.client.reactions_remove(
+                    channel=channel,
+                    name="hourglass_flowing_sand",
+                    timestamp=msg_id,
+                )
 
         await self.app.client.reactions_add(
             channel=channel,
@@ -211,9 +291,16 @@ class WorcabSlackBot:
 
 
     async def _post_summary(
-        self, summary: Dict[str, Dict[str, List[StructuredSummary]]], channel: str, msg_id: str, say: callable
-    ):
-        """Post the retrieved summaries to the thread as txt files"""
+        self, summary: Dict[str, Dict[str, List[StructuredSummary]]], channel: str, msg_id: str
+    ) -> None:
+        """
+        Post the retrieved summaries to the thread as txt files.
+
+        Args:
+            summary (Dict[str, Dict[str, List[StructuredSummary]]]): The BaseSummary object from wordcab-python
+            channel (str): The channel id
+            msg_id (str): The message id
+        """
         file_uploads = await self._format_files_to_upload(summary)
         
         await self.app.client.files_upload_v2(
@@ -227,7 +314,15 @@ class WorcabSlackBot:
     async def _format_files_to_upload(
         self, summary: Dict[str, Dict[str, List[StructuredSummary]]]
     ) -> List[Dict[str, io.StringIO]]:
-        """Format the summary to upload to Slack as a List of Dicts with the file name and the content"""
+        """
+        Format the summary to upload to Slack as a List of Dicts with the file name and the content.
+
+        Args:
+            summary (Dict[str, Dict[str, List[StructuredSummary]]]): The BaseSummary object from wordcab-python
+
+        Returns:
+            List[Dict[str, io.StringIO]]: The list of files to upload with their metadata
+        """
         summary_type = summary.summary_type
         summary_id = summary.summary_id
 
@@ -247,6 +342,7 @@ class WorcabSlackBot:
 
 
     def schedule_processing_if_needed(self):
+        """Schedule the processing of the jobs queue if needed."""
         if len(self.jobs_queue) >= self.max_batch_size:
             self.needs_processing.set()
         elif self.jobs_queue:
@@ -255,8 +351,19 @@ class WorcabSlackBot:
             )
 
 
-    async def _process_job(self, job: JobData, channel: str, msg_id: str) -> None:
-        """Add the job with tasks to the queue and wait for the job to be done"""
+    async def _process_job(self, job: JobData, channel: str, msg_id: str) -> Dict[str, Union[str, List[str]]]:
+        """
+        Add the job with tasks to the queue and wait for the job to be done.
+
+        Args:
+            job (JobData): The job data to process including the tasks
+            channel (str): The channel id
+            msg_id (str): The message id
+
+        Returns:
+            Dict[str, Union[str, List[str]]]: The status of the job and the job names if successful, or
+            the error message if not.
+        """
         try:
             new_job = {
                 "done_event": asyncio.Event(),
@@ -282,7 +389,7 @@ class WorcabSlackBot:
 
 
     async def runner(self):
-        """Process the jobs in the queue"""
+        """Process the jobs in the queue. This is a coroutine that should be run at startup."""
         while True:
             await self.needs_processing.wait()
             self.needs_processing.clear()
@@ -312,8 +419,16 @@ class WorcabSlackBot:
             del job_batch
 
 
-    async def _launch_job_tasks(self, job: JobData) -> None:
-        """Process the job"""
+    async def _launch_job_tasks(self, job: JobData) -> List[str]:
+        """
+        Process the job and launch the tasks.
+
+        Args:
+            job (JobData): The job data to process including the tasks
+
+        Returns:
+            List[str]: The list of job names
+        """
         tasks = [
             self._summarization_task(url, summary_type, job.source_lang, job.summary_length)
             for summary_type in job.summary_type
@@ -325,7 +440,18 @@ class WorcabSlackBot:
 
 
     async def _summarization_task(self, url: str, summary_type: str, source_lang: str, summary_lens: List[int]) -> str:
-        """Launch a summarization job based on the input parameters and return the job name"""
+        """
+        Launch a summarization job based on the input parameters and return the job name.
+
+        Args:
+            url (str): The url of the file to summarize
+            summary_type (str): The type of summary to generate
+            source_lang (str): The language of the source file
+            summary_lens (List[int]): The list of summary lengths to generate
+
+        Returns:
+            str: The job name of the summarization job launched
+        """
         file_type = await self._check_file_extension(url.split("/")[-1])
         url_headers = {"Authorization": f"Bearer {self.slack_bot_token}"}
         
@@ -356,7 +482,15 @@ class WorcabSlackBot:
 
 
     async def _monitor_job_status(self, job_name: str) -> str:
-        """Monitor the job status and return the summary_id when the job is done"""
+        """
+        Monitor the job status and return the summary_id when the job is done.
+
+        Args:
+            job_name (str): The job name to monitor
+
+        Returns:
+            str: The summary_id of the job
+        """
         while True:
             job = await asyncio.get_event_loop().run_in_executor(
                 None, partial(retrieve_job, job_name=job_name, api_key=self.wordcab_api_key)
@@ -371,8 +505,16 @@ class WorcabSlackBot:
         return job.summary_details["summary_id"]
 
     
-    async def _get_summary(self, summary_id: str) -> str:
-        """Get the summary from the summary_id"""
+    async def _get_summary(self, summary_id: str) -> BaseSummary:
+        """
+        Get the summary from the summary_id
+
+        Args:
+            summary_id (str): The summary_id to get the summary from
+
+        Returns:
+            BaseSummary: The summary object from wordcab-python
+        """
         summary = await asyncio.get_event_loop().run_in_executor(
             None, partial(retrieve_summary, summary_id=summary_id, api_key=self.wordcab_api_key)
         )
@@ -381,7 +523,15 @@ class WorcabSlackBot:
 
 
     async def _check_file_extension(self, filename: str) -> str:
-        """Check the file extension and return the file type"""
+        """
+        Check the file extension and return the file type.
+
+        Args:
+            filename (str): The filename to check
+
+        Returns:
+            str: The file type
+        """
         file_extension = f".{filename.split('.')[-1]}"
 
         if file_extension in self.accepted_audio_formats:
