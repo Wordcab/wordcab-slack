@@ -10,7 +10,7 @@ You can customize the summarization parameters by adding them to your message:
     ↳ Can be `narrative`, `conversational` or `no_speaker`.
 - `source_lang`: the language of the input text.
     ↳ Can be `en` (English), `fr` (French), `de` (German), `es` (Spanish), `it` (Italian), `nl` (Dutch) or `sv` (Swedish).
-- `delete_job`: whether to delete the job and its associated files after the summarization process. 
+- `delete_job`: whether to delete the job and its associated files after the summarization process.
     ↳ Can be `True` or `False`.
 
 To choose custom parameters, add them to your message as follows:

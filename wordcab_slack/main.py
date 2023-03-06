@@ -4,10 +4,9 @@ import asyncio
 import logging
 
 from fastapi import FastAPI, Request
-
 from slack_bolt.adapter.fastapi.async_handler import AsyncSlackRequestHandler
 
-from slack_bot import WorcabSlackBot
+from wordcab_slack.slack_bot import WorcabSlackBot
 
 
 api = FastAPI(title="Wordcab Slack Bot", version="1.0.0")
@@ -31,8 +30,15 @@ async def health():
     return {"status": "ok"}
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    
+
     import uvicorn
-    uvicorn.run("main:api", host="0.0.0.0", port=8000, log_level="info", reload=True)
+
+    uvicorn.run(
+        "wordcab_slack.main:api",
+        host="0.0.0.0",
+        port=8000,
+        log_level="info",
+        reload=True,
+    )

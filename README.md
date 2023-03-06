@@ -1,2 +1,3 @@
 # wordcab-slack
-Slack bot that handles Summarization for you 
+
+Slack bot that handles Summarization for you

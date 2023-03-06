@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 class JobData(BaseModel):
     """Summary data for launching the summary jobs"""
+
     summary_length: List[int]
     summary_type: List[str]
     source_lang: str
@@ -14,7 +15,7 @@ class JobData(BaseModel):
     urls: List[str]
     msg_id: str
     num_tasks: Optional[int] = None
-    
+
     def __init__(self, **data):
         super().__init__(**data)
         self.num_tasks = len(self.urls) * len(self.summary_type)
