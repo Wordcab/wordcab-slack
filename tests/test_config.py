@@ -1,13 +1,15 @@
 # Copyright (c) 2023, The Wordcab team. All rights reserved.
 
 try:
-    from wordcab_slack.config import EMOJI_FLAGS_MAP
-    from wordcab_slack.config import EMOJI_NUMBERS_MAP
-    from wordcab_slack.config import LANGUAGES
-    from wordcab_slack.config import SLACK_BOT_TOKEN
-    from wordcab_slack.config import SLACK_SIGNING_SECRET
-    from wordcab_slack.config import SUMMARY_TYPES
-    from wordcab_slack.config import WORDCAB_API_KEY
+    from wordcab_slack.config import (
+        EMOJI_FLAGS_MAP,
+        EMOJI_NUMBERS_MAP,
+        LANGUAGES,
+        SLACK_BOT_TOKEN,
+        SLACK_SIGNING_SECRET,
+        SUMMARY_TYPES,
+        WORDCAB_API_KEY,
+    )
 except ImportError:
     raise ImportError("Please create a .env file in the root directory of the project.")
 
@@ -48,7 +50,7 @@ def test_emoji_numbers_map():
     assert EMOJI_NUMBERS_MAP[8] == "eight"
     assert EMOJI_NUMBERS_MAP[9] == "nine"
     assert EMOJI_NUMBERS_MAP[10] == "ten"
-    
+
 
 def test_summary_types():
     assert isinstance(SUMMARY_TYPES, list)
