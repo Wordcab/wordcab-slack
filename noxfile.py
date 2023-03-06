@@ -134,7 +134,15 @@ def precommit(session: Session) -> None:
 def tests(session: Session) -> None:
     """Run the test suite."""
     session.install(".")
-    session.install("coverage[toml]", "pytest", "pygments", "httpx")
+    session.install(
+        "asynctest",
+        "coverage[toml]",
+        "httpx",
+        "pytest",
+        "pytest-asyncio",
+        "pytest-mock",
+        "pygments",
+    )
     try:
         session.run(
             "coverage",
