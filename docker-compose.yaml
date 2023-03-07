@@ -4,7 +4,7 @@ services:
     image: "api:latest"
     container_name: "slack-api"
     build:
-      context: ./docker
+      context: .
       dockerfile: Dockerfile
       cache_from:
         - "api:latest"
