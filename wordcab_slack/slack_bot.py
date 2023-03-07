@@ -75,12 +75,13 @@ class WorcabSlackBot:
         """
         # Wrap the function in a try/except block to catch any errors
         try:
-            text, urls, channel, msg_id = await extract_info(body=body)
+            text, file_ids, channel, msg_id = await extract_info(body=body)
             params = await get_summarization_params(
                 text=text,
                 available_summary_types=self.available_summary_types,
                 available_languages=self.available_languages,
             )
+            urls = await self._get_urls_from_file_ids(file_ids=file_ids)
 
             job = JobData(
                 summary_length=params[0],
@@ -110,7 +111,9 @@ class WorcabSlackBot:
                 for job_name in job_names
             ]
             for completed_task, file_name in zip(
-                asyncio.as_completed(tasks), file_names, strict=True
+                asyncio.as_completed(tasks),
+                file_names,
+                strict=True,
             ):
                 result = await completed_task
                 summary = await get_summary(
@@ -298,7 +301,25 @@ class WorcabSlackBot:
             channel=channel,
             initial_comment=f"Output(s) for `{file_name}`",
             thread_ts=msg_id,
+            file_visibility="public",
         )
+
+    async def _get_urls_from_file_ids(self, file_ids: List[str]) -> List[str]:
+        """
+        Get the URLs of the files from the file ids.
+
+        Args:
+            file_ids (List[str]): The file ids
+
+        Returns:
+            List[str]: The URLs of the files
+        """
+        urls = []
+        for file_id in file_ids:
+            file_info = await self.app.client.files_info(file=file_id)
+            urls.append(file_info["file"]["url_private_download"])
+
+        return urls
 
     async def _process_job(
         self, job: JobData, channel: str, msg_id: str

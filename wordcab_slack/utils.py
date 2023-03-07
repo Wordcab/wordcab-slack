@@ -63,14 +63,14 @@ async def extract_info(body: Dict[str, str]) -> Tuple[str, List[str], str, str]:
         body (Dict[str, str]): The Slack event body
 
     Returns:
-        Tuple[str, List[str], str, str]: The text, urls, channel and message id
+        Tuple[str, List[str], str, str]: The text, file_ids, channel and message id
     """
     text = body["event"]["text"]
-    urls = [url["url_private_download"] for url in body["event"]["files"]]
+    file_ids = [file["id"] for file in body["event"]["files"]]
     channel = body["event"]["channel"]
     msg_id = body["event"]["ts"]
 
-    return text, urls, channel, msg_id
+    return text, file_ids, channel, msg_id
 
 
 async def format_files_to_upload(summary: BaseSummary) -> List[Dict[str, io.StringIO]]:
