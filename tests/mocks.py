@@ -8,4 +8,5 @@ class MockEventLoop(AbstractEventLoop):
     """Mock event loop for testing."""
 
     def run_in_executor(self, executor, func, *args):
+        """Mock run_in_executor method."""
         return executor.submit(func, *args)

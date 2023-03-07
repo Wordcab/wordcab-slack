@@ -110,7 +110,7 @@ class WorcabSlackBot:
                 for job_name in job_names
             ]
             for completed_task, file_name in zip(
-                asyncio.as_completed(tasks), file_names
+                asyncio.as_completed(tasks), file_names, strict=True
             ):
                 result = await completed_task
                 summary = await get_summary(

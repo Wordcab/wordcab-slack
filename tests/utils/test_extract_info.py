@@ -1,5 +1,5 @@
 # Copyright (c) 2023, The Wordcab team. All rights reserved.
-"""Tests for the extract_info function in utils.py file"""
+"""Tests for the extract_info function in utils.py file."""
 
 
 from typing import Dict, List, Tuple
