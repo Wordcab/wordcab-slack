@@ -90,7 +90,7 @@ async def test_launch_job_tasks(
         job,
         accepted_audio_formats=[".mp3", ".wav"],
         accepted_generic_formats=[".txt"],
-        bot_token="my_bot_key",
+        bot_token="my_bot_token",
         api_key="my_api_key",
     )
 
