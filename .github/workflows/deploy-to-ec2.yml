@@ -175,3 +175,6 @@ jobs:
           REMOTE_HOST: ${{ secrets.EC2_HOST }}
           REMOTE_USER: ${{ secrets.EC2_USER }}
           TARGET: ${{ secrets.EC2_TARGET }}
+          # Debugging
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          GIT_SSH_COMMAND: "ssh -vvv -i ${{ secrets.SSH_PRIVATE_KEY }} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
