@@ -27,7 +27,7 @@ from wordcab_slack.utils import _launch_job_tasks
                     [1, 3, 5],
                     [".mp3", ".wav"],
                     [".txt"],
-                    "my_bot_token",
+                    "my_bot_token",  # noqa: S106
                     "my_api_key",
                 ],
                 [
@@ -37,7 +37,7 @@ from wordcab_slack.utils import _launch_job_tasks
                     [1, 3, 5],
                     [".mp3", ".wav"],
                     [".txt"],
-                    "my_bot_token",
+                    "my_bot_token",  # noqa: S106
                     "my_api_key",
                 ],
                 [
@@ -47,7 +47,7 @@ from wordcab_slack.utils import _launch_job_tasks
                     [1, 3, 5],
                     [".mp3", ".wav"],
                     [".txt"],
-                    "my_bot_key",  # noqa: S106
+                    "my_bot_token",  # noqa: S106
                     "my_api_key",
                 ],
                 [
@@ -57,7 +57,7 @@ from wordcab_slack.utils import _launch_job_tasks
                     [1, 3, 5],
                     [".mp3", ".wav"],
                     [".txt"],
-                    "my_bot_key",  # noqa: S106
+                    "my_bot_token",  # noqa: S106
                     "my_api_key",
                 ],
             ],
