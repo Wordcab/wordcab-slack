@@ -78,14 +78,12 @@ async def extract_info(body: Dict[str, str]) -> Tuple[str, List[str], str, str]:
     return text, urls, channel, msg_id
 
 
-async def format_files_to_upload(
-    summary: Dict[str, Dict[str, List[StructuredSummary]]]
-) -> List[Dict[str, io.StringIO]]:
+async def format_files_to_upload(summary: BaseSummary) -> List[Dict[str, io.StringIO]]:
     """
     Format the summary to upload to Slack as a List of Dicts with the file name and the content.
 
     Args:
-        summary (Dict[str, Dict[str, List[StructuredSummary]]]): The BaseSummary object from wordcab-python
+        summary (BaseSummary): The BaseSummary object from wordcab-python
 
     Returns:
         List[Dict[str, io.StringIO]]: The list of files to upload with their metadata
@@ -148,13 +146,13 @@ async def get_summarization_params(
     source_lang = list({s for s in text.split() if s in available_languages})
     if not source_lang:
         source_lang = "en"
-    elif isinstance(source_lang, list) and len(source_lang) > 1:
+    elif isinstance(source_lang, list):
         source_lang = source_lang[0]
 
     delete_job = re.findall(r"True|False|true|false", text)
     if not delete_job:
         delete_job = "True"
-    elif len(delete_job) > 1:
+    elif isinstance(delete_job, list):
         delete_job = delete_job[0]
 
     return summary_length, summary_type, source_lang, literal_eval(delete_job)

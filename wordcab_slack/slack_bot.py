@@ -7,7 +7,7 @@ from typing import Dict, List, Union
 from loguru import logger as log
 from slack_bolt.async_app import AsyncApp
 from wordcab.config import AVAILABLE_AUDIO_FORMATS, AVAILABLE_GENERIC_FORMATS
-from wordcab.core_objects import StructuredSummary
+from wordcab.core_objects import BaseSummary
 
 from wordcab_slack.config import (
     EMOJI_FLAGS_MAP,
@@ -276,7 +276,7 @@ class WorcabSlackBot:
 
     async def _post_summary(
         self,
-        summary: Dict[str, Dict[str, List[StructuredSummary]]],
+        summary: BaseSummary,
         file_name: str,
         channel: str,
         msg_id: str,
@@ -285,7 +285,7 @@ class WorcabSlackBot:
         Post the retrieved summaries to the thread as txt files.
 
         Args:
-            summary (Dict[str, Dict[str, List[StructuredSummary]]]): The BaseSummary object from wordcab-python
+            summary (BaseSummary): The BaseSummary object from wordcab-python
             file_name (str): The name of the summarized input file
             channel (str): The channel id
             msg_id (str): The message id
