@@ -1,8 +1,9 @@
 # Copyright (c) 2023, The Wordcab team. All rights reserved.
 """Tests for the _get_file_names function in utils.py file."""
 
-import pytest
 from typing import List
+
+import pytest
 
 from wordcab_slack.utils import _get_file_names
 

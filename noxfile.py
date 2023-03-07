@@ -148,7 +148,7 @@ def tests(session: Session) -> None:
             "coverage",
             "run",
             "--omit",
-            "wordcab_slack/main.py",
+            "wordcab_slack/main.py,wordcab_slack/slack_bot.py",
             "--parallel",
             "-m",
             "pytest",

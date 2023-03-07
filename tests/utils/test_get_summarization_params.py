@@ -3,8 +3,8 @@
 
 import pytest
 
-from wordcab_slack.utils import get_summarization_params
 from wordcab_slack.config import LANGUAGES, SUMMARY_TYPES
+from wordcab_slack.utils import get_summarization_params
 
 
 @pytest.fixture
@@ -24,7 +24,9 @@ async def test_no_params(available_summary_types, available_languages):
     """Test the get_summarization_params function with no params."""
     text = "Get me a summary"
     expected = ([1, 3, 5], ["narrative"], "en", True)
-    result = await get_summarization_params(text, available_summary_types, available_languages)
+    result = await get_summarization_params(
+        text, available_summary_types, available_languages
+    )
     assert result == expected
 
 
@@ -33,7 +35,9 @@ async def test_summary_length(available_summary_types, available_languages):
     """Test the get_summarization_params function with summary length params."""
     text = "3 and 4"
     expected = ([3, 4], ["narrative"], "en", True)
-    result = await get_summarization_params(text, available_summary_types, available_languages)
+    result = await get_summarization_params(
+        text, available_summary_types, available_languages
+    )
     assert result == expected
 
 
@@ -42,7 +46,9 @@ async def test_summary_type(available_summary_types, available_languages):
     """Test the get_summarization_params function with summary type params."""
     text = "conversational"
     expected = ([1, 3, 5], ["conversational"], "en", True)
-    result = await get_summarization_params(text, available_summary_types, available_languages)
+    result = await get_summarization_params(
+        text, available_summary_types, available_languages
+    )
     assert result == expected
 
 
@@ -51,7 +57,21 @@ async def test_source_lang(available_summary_types, available_languages):
     """Test the get_summarization_params function with source language params."""
     text = "fr"
     expected = ([1, 3, 5], ["narrative"], "fr", True)
-    result = await get_summarization_params(text, available_summary_types, available_languages)
+    result = await get_summarization_params(
+        text, available_summary_types, available_languages
+    )
+    assert result == expected
+
+
+@pytest.mark.asyncio
+async def test_multiple_source_lang(available_summary_types, available_languages):
+    """Test the get_summarization_params function with multiple source language params."""
+    text = "fr de en"
+    expected_lang = list({s for s in text.split() if s in LANGUAGES})[0]
+    expected = ([1, 3, 5], ["narrative"], expected_lang, True)
+    result = await get_summarization_params(
+        text, available_summary_types, available_languages
+    )
     assert result == expected
 
 
@@ -60,7 +80,20 @@ async def test_delete_job(available_summary_types, available_languages):
     """Test the get_summarization_params function with delete job params."""
     text = "False"
     expected = ([1, 3, 5], ["narrative"], "en", False)
-    result = await get_summarization_params(text, available_summary_types, available_languages)
+    result = await get_summarization_params(
+        text, available_summary_types, available_languages
+    )
+    assert result == expected
+
+
+@pytest.mark.asyncio
+async def test_multiple_delete_job(available_summary_types, available_languages):
+    """Test the get_summarization_params function with multiple delete job params."""
+    text = "False true false"
+    expected = ([1, 3, 5], ["narrative"], "en", False)
+    result = await get_summarization_params(
+        text, available_summary_types, available_languages
+    )
     assert result == expected
 
 
@@ -69,5 +102,7 @@ async def test_multiple_params(available_summary_types, available_languages):
     """Test the get_summarization_params function with multiple params."""
     text = "3 no_speaker de False"
     expected = ([3], ["no_speaker"], "de", False)
-    result = await get_summarization_params(text, available_summary_types, available_languages)
+    result = await get_summarization_params(
+        text, available_summary_types, available_languages
+    )
     assert result == expected

@@ -9,12 +9,7 @@ from functools import partial
 from typing import Dict, List, Tuple
 
 from wordcab import delete_job, retrieve_job, retrieve_summary, start_summary
-from wordcab.core_objects import (
-    AudioSource,
-    BaseSummary,
-    GenericSource,
-    StructuredSummary,
-)
+from wordcab.core_objects import AudioSource, BaseSummary, GenericSource
 
 from wordcab_slack.models import JobData
 
@@ -149,7 +144,7 @@ async def get_summarization_params(
     elif isinstance(source_lang, list):
         source_lang = source_lang[0]
 
-    delete_job = re.findall(r"True|False|true|false", text)
+    delete_job = re.findall(r"True|False|true|false|TRUE|FALSE", text)
     if not delete_job:
         delete_job = "True"
     elif isinstance(delete_job, list):
