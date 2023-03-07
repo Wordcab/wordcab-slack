@@ -1,4 +1,5 @@
 # Copyright (c) 2023, The Wordcab team. All rights reserved.
+# flake8: noqa: S106
 """Tests for the _launch_job_tasks function in utils.py file."""
 
 from unittest.mock import AsyncMock
@@ -73,7 +74,6 @@ async def test_launch_job_tasks(
     expected_tasks: list,
 ) -> None:
     """Test the _launch_job_tasks function."""
-    # flake8: noqa: S106
     job = JobData(
         summary_length=summary_length,
         summary_type=summary_type,
@@ -90,7 +90,7 @@ async def test_launch_job_tasks(
         job,
         accepted_audio_formats=[".mp3", ".wav"],
         accepted_generic_formats=[".txt"],
-        bot_token="my_bot_token",
+        bot_token="my_bot_token",  # noqa: S106
         api_key="my_api_key",
     )
 
