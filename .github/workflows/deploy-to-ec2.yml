@@ -186,8 +186,10 @@ jobs:
           REMOTE_USER: ${{ secrets.EC2_USER }}
           TARGET: ${{ secrets.EC2_TARGET }}
         run: |
-          touch .env
-          echo "WORDCAB_API_KEY=${{ secrets.WORDCAB_API_KEY }}" >> .env
-          echo "SLACK_BOT_TOKEN=${{ secrets.SLACK_BOT_TOKEN }}" >> .env
-          echo "SLACK_SIGNING_SECRET=${{ secrets.SLACK_SIGNING_SECRET }}" >> .env
+          mkdir -p /tmp/wordcab
+          touch /tmp/wordcab/.env
+          echo "WORDCAB_API_KEY=${{ secrets.WORDCAB_API_KEY }}" >> /tmp/wordcab/.env
+          echo "SLACK_BOT_TOKEN=${{ secrets.SLACK_BOT_TOKEN }}" >> /tmp/wordcab/.env
+          echo "SLACK_SIGNING_SECRET=${{ secrets.SLACK_SIGNING_SECRET }}" >> /tmp/wordcab/.env
+          scp -i $SSH_PRIVATE_KEY /tmp/myapp/.env $REMOTE_USER@$REMOTE_HOST:$TARGET/.env
           ssh -i $SSH_PRIVATE_KEY $REMOTE_USER@$REMOTE_HOST "cd $TARGET && docker-compose up -d"
