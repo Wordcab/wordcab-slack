@@ -1,9 +1,10 @@
 # Copyright (c) 2023, The Wordcab team. All rights reserved.
 """Tests for the _summarization_task function in utils.py file."""
 
+from unittest.mock import AsyncMock
+
 import pytest
 import pytest_mock
-from unittest.mock import AsyncMock
 
 from wordcab_slack.utils import _summarization_task
 
@@ -25,8 +26,8 @@ from wordcab_slack.utils import _summarization_task
             "en",
             [1, 3, 5],
             Exception,
-        )
-    ]
+        ),
+    ],
 )
 async def test_summarization_task_with_invalid_file(
     mocker: pytest_mock.MockFixture,
@@ -48,6 +49,6 @@ async def test_summarization_task_with_invalid_file(
             summary_lens=summary_lens,
             accepted_audio_formats=[".mp3", ".wav"],
             accepted_generic_formats=[".txt"],
-            bot_token="my_bot_token",
-            api_key="my_api_key",
+            bot_token="my_bot_token",  # noqa: S106
+            api_key="my_api_key",  # noqa: S106
         )
