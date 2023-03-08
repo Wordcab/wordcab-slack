@@ -51,7 +51,7 @@ async def delete_finished_jobs(job_names: List[str], api_key: str) -> None:
     for job_name in job_names:
         await asyncio.get_event_loop().run_in_executor(
             None,
-            partial(delete_job, job_name=job_name, api_key=api_key),
+            partial(delete_job, job_name=job_name, warning=False, api_key=api_key),
         )
 
 

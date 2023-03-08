@@ -804,14 +804,14 @@ socks = ["socksio (>=1.0.0,<2.0.0)"]
 
 [[package]]
 name = "identify"
-version = "2.5.18"
+version = "2.5.19"
 description = "File identification library for Python"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "identify-2.5.18-py2.py3-none-any.whl", hash = "sha256:93aac7ecf2f6abf879b8f29a8002d3c6de7086b8c28d88e1ad15045a15ab63f9"},
-    {file = "identify-2.5.18.tar.gz", hash = "sha256:89e144fa560cc4cffb6ef2ab5e9fb18ed9f9b3cb054384bab4b95c12f6c309fe"},
+    {file = "identify-2.5.19-py2.py3-none-any.whl", hash = "sha256:3ee3533e7f6f5023157fbebbd5687bb4b698ce6f305259e0d24b2d7d9efb72bc"},
+    {file = "identify-2.5.19.tar.gz", hash = "sha256:4102ecd051f6884449e7359e55b38ba6cd7aafb6ef27b8e2b38495a5723ea106"},
 ]
 
 [package.extras]
@@ -1550,14 +1550,14 @@ files = [
 
 [[package]]
 name = "setuptools"
-version = "67.5.1"
+version = "67.6.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "setuptools-67.5.1-py3-none-any.whl", hash = "sha256:1c39d42bda4cb89f7fdcad52b6762e3c309ec8f8715b27c684176b7d71283242"},
-    {file = "setuptools-67.5.1.tar.gz", hash = "sha256:15136a251127da2d2e77ac7a1bc231eb504654f7e3346d93613a13f2e2787535"},
+    {file = "setuptools-67.6.0-py3-none-any.whl", hash = "sha256:b78aaa36f6b90a074c1fa651168723acbf45d14cb1196b6f02c0fd07f17623b2"},
+    {file = "setuptools-67.6.0.tar.gz", hash = "sha256:2ee892cd5f29f3373097f5a814697e397cf3ce313616df0af11231e2ad118077"},
 ]
 
 [package.extras]
@@ -1833,14 +1833,14 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 
 [[package]]
 name = "wordcab"
-version = "0.5.2"
+version = "0.5.4"
 description = "Wordcab Python SDK"
 category = "main"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "wordcab-0.5.2-py3-none-any.whl", hash = "sha256:4a3d507d2cb8661bd49c2eee10c25e0e13bcce85379be9ea56c38253831f8728"},
-    {file = "wordcab-0.5.2.tar.gz", hash = "sha256:9ed8dfb7575954b8e9f740a0291ce9f88ca8483307692e5aef37f065fa69bc52"},
+    {file = "wordcab-0.5.4-py3-none-any.whl", hash = "sha256:b6c386a4c0c609990b644e5e3694652fa8ac970d086966d82926adf3bf5307cd"},
+    {file = "wordcab-0.5.4.tar.gz", hash = "sha256:178ad7bbfdd2b7a3e83db3f832ff957ae734a548353fd92450a0ff0fddeee6d4"},
 ]
 
 [package.dependencies]
