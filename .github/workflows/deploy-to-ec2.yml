@@ -10,29 +10,28 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          ref: main
-          ssh-key: ${{ secrets.REPO_SSH_KEY }}
-          fetch-depth: 0
+
+      - name: Push code to EC2
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.EC2_HOST }}
+          REMOTE_USER: ${{ secrets.EC2_USER }}
+          TARGET: ${{ secrets.EC2_TARGET }}
 
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y git docker-compose
 
-      - name: SSH into EC2 and pull the latest code
+      - name: SSH into EC2 and run the docker-compose
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          proxy_key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            if [ -d "wordcab-slack" ]; then
-              sudo rm -rf wordcab-slack
-            fi
-            git clone --depth 1 git@github.com:Wordcab/wordcab-slack.git wordcab-slack
             cd wordcab-slack
-            git checkout main
             touch .env
             echo "WORDCAB_API_KEY=${{ secrets.WORDCAB_API_KEY }}" >> .env
             echo "SLACK_BOT_TOKEN=${{ secrets.SLACK_BOT_TOKEN }}" >> .env
