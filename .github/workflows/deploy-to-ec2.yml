@@ -28,10 +28,11 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             if [ -d "wordcab-slack" ]; then
-              (cd wordcab-slack && git pull)
-            else
-              (git clone --depth 1 git@github.com:Wordcab/wordcab-slack.git wordcab-slack && cd wordcab-slack && git checkout main)
+              sudo rm -rf wordcab-slack
             fi
+            git clone --depth 1 git@github.com:Wordcab/wordcab-slack.git wordcab-slack
+            cd wordcab-slack
+            git checkout main
             touch .env
             echo "WORDCAB_API_KEY=${{ secrets.WORDCAB_API_KEY }}" >> .env
             echo "SLACK_BOT_TOKEN=${{ secrets.SLACK_BOT_TOKEN }}" >> .env
