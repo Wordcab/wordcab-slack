@@ -1,5 +1,7 @@
 FROM python:3.10-slim as python-base
 
+ENV TZ=Europe/Paris
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -15,15 +17,11 @@ ENV PYTHONFAULTHANDLER=1 \
     VENV_PATH="/opt/pysetup/.venv"
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
-RUN apt-get update \
-    && apt-get install --no-install-recommends -y \
-        curl \
-        build-essential
-
 RUN pip install "poetry==$POETRY_VERSION"
 
 WORKDIR $PYSETUP_PATH
 COPY ./poetry.lock ./pyproject.toml ./
+RUN poetry lock --no-update
 RUN poetry install --only main
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
