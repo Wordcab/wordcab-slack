@@ -27,10 +27,11 @@ RUN poetry install --only main
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
-COPY ./wordcab_slack /app/wordcab_slack
-COPY ./.env /app/.env
+COPY wordcab_slack /app/wordcab_slack
+COPY .env /app/.env
+COPY bot-description.txt /app/bot-description.txt
 
 WORKDIR /app
 
 ENTRYPOINT /docker-entrypoint.sh $0 $@
-CMD ["uvicorn", "--reload", "--host=0.0.0.0", "--port=5000", "wordcab_slack.main:api"]
+CMD ["uvicorn", "--reload", "--host=0.0.0.0", "--port=5001", "wordcab_slack.main:api"]

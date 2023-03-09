@@ -42,7 +42,7 @@ class WorcabSlackBot:
             token=self.slack_bot_token, signing_secret=SLACK_SIGNING_SECRET
         )
 
-        with open("bot-description.txt") as f:
+        with open("./bot-description.txt") as f:
             self.bot_description = f.read()
 
         self.app.event({"type": "message", "subtype": "file_share"})(self.file_share)
