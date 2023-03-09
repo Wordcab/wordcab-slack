@@ -18,8 +18,8 @@ from wordcab_slack.utils import extract_info
                 "event": {
                     "text": "Hello world",
                     "files": [
-                        {"url_private_download": "https://example.com/file1.txt"},
-                        {"url_private_download": "https://example.com/file2.txt"},
+                        {"id": "abc123"},
+                        {"id": "def456"},
                     ],
                     "channel": "test-channel",
                     "ts": "1234567890.123456",
@@ -27,7 +27,7 @@ from wordcab_slack.utils import extract_info
             },
             (
                 "Hello world",
-                ["https://example.com/file1.txt", "https://example.com/file2.txt"],
+                ["abc123", "def456"],
                 "test-channel",
                 "1234567890.123456",
             ),
