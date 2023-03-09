@@ -36,5 +36,6 @@ jobs:
             echo "WORDCAB_API_KEY=${{ secrets.WORDCAB_API_KEY }}" >> .env
             echo "SLACK_BOT_TOKEN=${{ secrets.SLACK_BOT_TOKEN }}" >> .env
             echo "SLACK_SIGNING_SECRET=${{ secrets.SLACK_SIGNING_SECRET }}" >> .env
+            sudo docker rm -f $(docker ps -a -q -f "name=nginx" -f "name=slack-api") || true
             sudo docker-compose build
             sudo docker-compose up -d
