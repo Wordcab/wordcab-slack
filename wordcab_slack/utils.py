@@ -130,6 +130,8 @@ async def get_summarization_params(
     Returns:
         Tuple[List[int], List[str], str, bool]: The summary length, summary type, source language and delete job
     """
+    text = re.sub(r"<@\w+>", "", text)  # Remove the @user from the text
+
     summary_length = list({int(s) for s in re.findall(r"\d+", text) if int(s) <= 5})
     if not summary_length:
         summary_length = [1, 3, 5]

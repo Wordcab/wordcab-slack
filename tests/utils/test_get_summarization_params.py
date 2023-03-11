@@ -106,3 +106,27 @@ async def test_multiple_params(available_summary_types, available_languages):
         text, available_summary_types, available_languages
     )
     assert result == expected
+
+
+@pytest.mark.asyncio
+async def test_with_only_user_mentions(available_summary_types, available_languages):
+    """Test the get_summarization_params function with only user mentions."""
+    text = "<@U01A1B2C3D>"
+    expected = ([1, 3, 5], ["narrative"], "en", True)
+    result = await get_summarization_params(
+        text, available_summary_types, available_languages
+    )
+    assert result == expected
+
+
+@pytest.mark.asyncio
+async def test_with_user_mentions_and_params(
+    available_summary_types, available_languages
+):
+    """Test the get_summarization_params function with user mentions."""
+    text = "<@U01A1B2C3D> 3 no_speaker de False"
+    expected = ([3], ["no_speaker"], "de", False)
+    result = await get_summarization_params(
+        text, available_summary_types, available_languages
+    )
+    assert result == expected
