@@ -10,9 +10,9 @@ from wordcab_slack.utils import _add_context_to_summary
 
 
 @pytest.fixture
-def summary() -> io.StringIO:
+def summary() -> str:
     """Return the summary."""
-    return io.StringIO("initial summary")
+    return "initial summary"
 
 
 @pytest.mark.asyncio
@@ -38,4 +38,4 @@ async def test_add_context_to_summary(
 ) -> None:
     """Test the _add_context_to_summary function with valid input."""
     result = await _add_context_to_summary(summary, context)
-    assert result.getvalue() == expected
+    assert result == expected

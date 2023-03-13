@@ -97,9 +97,6 @@ async def format_files_to_upload(summary: BaseSummary) -> List[Dict[str, io.Stri
         else:
             file_content = await _format_any_summary(val["structured_summary"])
 
-        if "context" in val:
-            file_content = await _add_context_to_summary(file_content, val["context"])
-
         file_uploads.append(
             {
                 "filename": f"{summary_type}_{key}_{summary_id}.txt",
@@ -114,26 +111,23 @@ async def format_files_to_upload(summary: BaseSummary) -> List[Dict[str, io.Stri
 
 
 async def _add_context_to_summary(
-    summary: io.StringIO,
+    summary: str,
     context: Dict[str, Union[str, List[str], Dict[str, Union[str, List[str]]]]],
-) -> io.StringIO:
+) -> str:
     """
     Add the context to the summary.
 
     Args:
-        summary (io.StringIO): The summary to add the context to
+        summary (str): The summary to add the context to
         context (Dict[str, Union[str, List[str], Dict[str, Union[str, List[str]]]]]): The context to add to the summary
 
     Returns:
-        io.StringIO: The summary with the context added
+        str: The summary with the context added
     """
-    summary.seek(0)
-    summary_content = summary.read()
-
     for k, v in context.items():
-        summary_content += f"\n\n{k}: {v}"
+        summary += f"\n\n{k}: {v}"
 
-    return io.StringIO(summary_content)
+    return summary
 
 
 async def _format_brief_summary(structured_summary: StructuredSummary) -> io.StringIO:
@@ -146,14 +140,18 @@ async def _format_brief_summary(structured_summary: StructuredSummary) -> io.Str
     Returns:
         io.StringIO: The formatted summary
     """
-    return io.StringIO(
-        "\n\n".join(
-            [
-                f"Title: {summary.summary['title']}\nBrief summary: {summary.summary['brief_summary']}"
-                for summary in structured_summary
-            ]
+    summaries: List[str] = []
+    for s in structured_summary:
+        summary = (
+            f"Title: {s.summary['title']}\nBrief summary: {s.summary['brief_summary']}"
         )
-    )
+
+        if s.context:
+            summary = await _add_context_to_summary(summary, s.context)
+
+        summaries.append(summary)
+
+    return io.StringIO("\n\n".join(summaries))
 
 
 async def _format_any_summary(structured_summary: StructuredSummary) -> io.StringIO:
@@ -166,7 +164,16 @@ async def _format_any_summary(structured_summary: StructuredSummary) -> io.Strin
     Returns:
         io.StringIO: The formatted summary
     """
-    return io.StringIO(" ".join([summary.summary for summary in structured_summary]))
+    summaries: List[str] = []
+    for s in structured_summary:
+        summary = s.summary
+
+        if s.context:
+            summary = await _add_context_to_summary(summary, s.context)
+
+        summaries.append(summary)
+
+    return io.StringIO(" ".join(summaries))
 
 
 async def _get_file_names(urls: List[str]) -> List[str]:

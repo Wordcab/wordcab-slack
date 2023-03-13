@@ -123,10 +123,9 @@ class WorcabSlackBot:
 
             await self._final_checking_reaction(channel, msg_id)
 
-            if job.delete_job:
-                await delete_finished_jobs(
-                    job_names=job_names, api_key=self.wordcab_api_key
-                )
+            await delete_finished_jobs(
+                job_names=job_names, api_key=self.wordcab_api_key
+            )
 
         except Exception as e:
             await self._error_reaction(channel, msg_id, say, str(e))
