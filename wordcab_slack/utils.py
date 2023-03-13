@@ -142,10 +142,10 @@ async def _format_brief_summary(structured_summary: StructuredSummary) -> io.Str
     Format the brief summary to upload to Slack.
 
     Args:
-        structured_summary (List[Dict[str, Any]]): The structured summary from wordcab-python
+        structured_summary (StructuredSummary): The StructuredSummary object from wordcab-python
 
     Returns:
-        str: The formatted brief summary
+        io.StringIO: The formatted summary
     """
     return io.StringIO(
         "\n\n".join(
@@ -162,10 +162,10 @@ async def _format_any_summary(structured_summary: StructuredSummary) -> io.Strin
     Format the summary to upload to Slack. For all summary types except brief.
 
     Args:
-        summary (BaseSummary): The BaseSummary object from wordcab-python
+        structured_summary (StructuredSummary): The StructuredSummary object from wordcab-python
 
     Returns:
-        str: The formatted summary
+        io.StringIO: The formatted summary
     """
     return io.StringIO(" ".join([summary.summary for summary in structured_summary]))
 
