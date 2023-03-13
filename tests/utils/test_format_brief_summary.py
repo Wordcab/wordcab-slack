@@ -23,11 +23,11 @@ from wordcab_slack.utils import _format_brief_summary
                     summary={"title": "Title 2", "brief_summary": "Summary 2"}
                 ),
             ],
-            "Title 1\nSummary 1\n\nTitle 2\nSummary 2",
+            "Title: Title 1\nBrief summary: Summary 1\n\nTitle: Title 2\nBrief summary: Summary 2",
         ),
         (
             [StructuredSummary(summary={"title": "Title", "brief_summary": "Summary"})],
-            "Title\nSummary",
+            "Title: Title\nBrief summary: Summary",
         ),
         ([], ""),
     ],

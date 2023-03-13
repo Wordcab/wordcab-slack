@@ -13,7 +13,8 @@ def valid_data():
         "summary_length": [100, 200],
         "summary_type": ["text", "audio"],
         "source_lang": "en",
-        "delete_job": False,
+        "target_lang": "en",
+        "context_features": ["issue", "purpose"],
         "urls": ["http://example.com"],
         "msg_id": "1234",
     }
@@ -26,7 +27,8 @@ def invalid_urls():
         "summary_length": [100, 200],
         "summary_type": ["text", "audio"],
         "source_lang": "en",
-        "delete_job": False,
+        "target_lang": "en",
+        "context_features": ["issue", "purpose"],
         "urls": "example.com",
         "msg_id": "1234",
     }
@@ -39,7 +41,8 @@ def invalid_summary_type():
         "summary_length": [100, 200],
         "summary_type": "text",
         "source_lang": "en",
-        "delete_job": False,
+        "target_lang": "en",
+        "context_features": ["issue", "purpose"],
         "urls": ["example.com"],
         "msg_id": "1234",
     }
@@ -52,7 +55,22 @@ def invalid_summary_length():
         "summary_length": 100,
         "summary_type": ["text", "audio"],
         "source_lang": "en",
-        "delete_job": False,
+        "target_lang": "en",
+        "context_features": ["issue", "purpose"],
+        "urls": ["example.com"],
+        "msg_id": "1234",
+    }
+
+
+@pytest.fixture
+def invalid_context_features():
+    """Fixture for invalid context features."""
+    return {
+        "summary_length": [100, 200],
+        "summary_type": ["text", "audio"],
+        "source_lang": "en",
+        "target_lang": "en",
+        "context_features": [1, 2],
         "urls": ["example.com"],
         "msg_id": "1234",
     }
@@ -64,7 +82,6 @@ def test_valid_job_data(valid_data):
     assert job_data.summary_length == [100, 200]
     assert job_data.summary_type == ["text", "audio"]
     assert job_data.source_lang == "en"
-    assert job_data.delete_job is False
     assert job_data.urls == ["http://example.com"]
     assert job_data.msg_id == "1234"
     assert job_data.num_tasks == 2

@@ -4,7 +4,6 @@
 import asyncio
 import io
 import re
-from ast import literal_eval
 from functools import partial
 from typing import Dict, List, Tuple, Union
 
@@ -150,7 +149,7 @@ async def _format_brief_summary(structured_summary: StructuredSummary) -> io.Str
     return io.StringIO(
         "\n\n".join(
             [
-                f"{summary.summary['title']}\n{summary.summary['brief_summary']}"
+                f"Title: {summary.summary['title']}\nBrief summary: {summary.summary['brief_summary']}"
                 for summary in structured_summary
             ]
         )
@@ -184,18 +183,18 @@ async def _get_file_names(urls: List[str]) -> List[str]:
 
 
 async def get_summarization_params(
-    text: str, available_summary_types: List[str], available_languages: List[str]
-) -> Tuple[List[int], List[str], str, bool]:
+    text: str, available_summary_types: List[str]
+) -> Tuple[List[int], List[str], str, str, bool]:
     """
     Extract the summarization parameters from the Slack event text.
 
     Args:
         text (str): The Slack event text
         available_summary_types (List[str]): The list of available summary types
-        available_languages (List[str]): The list of available languages
 
     Returns:
-        Tuple[List[int], List[str], str, bool]: The summary length, summary type, source language and delete job
+        Tuple[List[int], List[str], str, bool]: The summary length, summary type, source language, target language
+        and context features
     """
     text = re.sub(r"<@\w+>", "", text)  # Remove the @user from the text
 
@@ -207,19 +206,25 @@ async def get_summarization_params(
     if not summary_type:
         summary_type = ["narrative"]
 
-    source_lang = list({s for s in text.split() if s in available_languages})
+    source_lang = re.findall(r"source_lang:\w+", text)
     if not source_lang:
         source_lang = "en"
     elif isinstance(source_lang, list):
-        source_lang = source_lang[0]
+        source_lang = source_lang[0].split(":")[-1]
 
-    delete_job = re.findall(r"True|False|true|false|TRUE|FALSE", text)
-    if not delete_job:
-        delete_job = "True"
-    elif isinstance(delete_job, list):
-        delete_job = delete_job[0]
+    target_lang = re.findall(r"target_lang:\w+", text)
+    if not target_lang:
+        target_lang = source_lang
+    elif isinstance(target_lang, list):
+        target_lang = target_lang[0].split(":")[-1]
 
-    return summary_length, summary_type, source_lang, literal_eval(delete_job)
+    context_features = re.findall(r"context:(.*)", text)
+    if not context_features:
+        context_features = None
+    elif isinstance(context_features, list):
+        context_features = context_features[0].split(",")
+
+    return summary_length, summary_type, source_lang, target_lang, context_features
 
 
 async def get_summary(summary_id: str, api_key: str) -> BaseSummary:
@@ -266,6 +271,8 @@ async def _launch_job_tasks(
             url=url,
             summary_type=summary_type,
             source_lang=job.source_lang,
+            target_lang=job.target_lang,
+            context_features=job.context_features,
             summary_lens=job.summary_length,
             accepted_audio_formats=accepted_audio_formats,
             accepted_generic_formats=accepted_generic_formats,
@@ -310,6 +317,8 @@ async def _summarization_task(
     url: str,
     summary_type: str,
     source_lang: str,
+    target_lang: str,
+    context_features: Union[List[str], None],
     summary_lens: List[int],
     accepted_audio_formats: List[str],
     accepted_generic_formats: List[str],
@@ -323,6 +332,8 @@ async def _summarization_task(
         url (str): The url of the file to summarize
         summary_type (str): The type of summary to generate
         source_lang (str): The language of the source file
+        target_lang (str): The language of the summary
+        context_features (Union[List[str], None]): The list of context features to use if any else None
         summary_lens (List[int]): The list of summary lengths to generate
         accepted_audio_formats (List[str]): The list of accepted audio formats
         accepted_generic_formats (List[str]): The list of accepted generic formats
@@ -362,6 +373,8 @@ async def _summarization_task(
             source_object=source,
             display_name="slack",
             source_lang=source_lang,
+            target_lang=target_lang,
+            context=context_features,
             summary_type=summary_type,
             summary_lens=summary_lens,
             tags=["slack", "slackbot"],

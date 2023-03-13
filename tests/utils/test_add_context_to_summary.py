@@ -31,7 +31,7 @@ def summary() -> io.StringIO:
         ({}, "initial summary"),
     ],
 )
-async def test__add_context_to_summary(
+async def test_add_context_to_summary(
     summary: io.StringIO,
     context: Dict[str, Union[str, List[str], Dict[str, Union[str, List[str]]]]],
     expected: str,

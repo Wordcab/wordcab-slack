@@ -1,7 +1,7 @@
 # Copyright (c) 2023, The Wordcab team. All rights reserved.
 """API models for the wordcab_slack package."""
 
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from pydantic import BaseModel
 
@@ -12,7 +12,8 @@ class JobData(BaseModel):
     summary_length: List[int]
     summary_type: List[str]
     source_lang: str
-    delete_job: bool
+    target_lang: str
+    context_features: Union[List[str], None]
     urls: List[str]
     msg_id: str
     num_tasks: Optional[int] = None

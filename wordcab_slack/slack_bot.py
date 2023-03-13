@@ -79,7 +79,6 @@ class WorcabSlackBot:
             params = await get_summarization_params(
                 text=text,
                 available_summary_types=self.available_summary_types,
-                available_languages=self.available_languages,
             )
             urls = await self._get_urls_from_file_ids(file_ids=file_ids)
 
@@ -87,12 +86,13 @@ class WorcabSlackBot:
                 summary_length=params[0],
                 summary_type=params[1],
                 source_lang=params[2],
-                delete_job=params[3],
+                target_lang=params[3],
+                context_features=params[4],
                 urls=urls,
                 msg_id=msg_id,
             )
             await self._add_job_reactions(
-                job.num_tasks, job.source_lang, channel, msg_id
+                job.num_tasks, job.source_lang, job.target_lang, channel, msg_id
             )
 
             result = await self._process_job(job, channel, msg_id)
@@ -171,7 +171,12 @@ class WorcabSlackBot:
             pass
 
     async def _add_job_reactions(
-        self, num_tasks: int, source_lang: str, channel: str, msg_id: str
+        self,
+        num_tasks: int,
+        source_lang: str,
+        target_lang: str,
+        channel: str,
+        msg_id: str,
     ) -> None:
         """
         Add reactions to the message to indicate the number of jobs and the source language.
@@ -179,6 +184,7 @@ class WorcabSlackBot:
         Args:
             num_tasks (int): The number of tasks to be executed
             source_lang (str): The source language
+            target_lang (str): The target language
             channel (str): The channel id
             msg_id (str): The message id
         """
@@ -206,6 +212,12 @@ class WorcabSlackBot:
             channel=channel,
             timestamp=msg_id,
         )
+        if target_lang != source_lang:
+            await self.app.client.reactions_add(
+                name=f"{EMOJI_FLAGS_MAP[target_lang]}",
+                channel=channel,
+                timestamp=msg_id,
+            )
 
     async def _loading_reaction(self, channel: str, msg_id: str) -> None:
         """
