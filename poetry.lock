@@ -1905,14 +1905,14 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 
 [[package]]
 name = "wordcab"
-version = "0.6.0"
+version = "0.6.1"
 description = "Wordcab Python SDK"
 category = "main"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "wordcab-0.6.0-py3-none-any.whl", hash = "sha256:a99becff6f52561839124702f729a89a699342f0d8b598c710db55934ead7cad"},
-    {file = "wordcab-0.6.0.tar.gz", hash = "sha256:8cf0222eb06f2130171c1ef8904493d9af1d1cd3694d82251aaf0300b2cb5c1a"},
+    {file = "wordcab-0.6.1-py3-none-any.whl", hash = "sha256:ebf21e7dbd3a0cfd486942aa3a585b58d82faf0d4bff3af6ccc43611ece9c165"},
+    {file = "wordcab-0.6.1.tar.gz", hash = "sha256:eb820133c584a9485619f0e253ff0d11f9948e078ac6e3ff290e2b0c712f31bb"},
 ]
 
 [package.dependencies]
@@ -2011,4 +2011,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<4.0"
-content-hash = "aed79ab0949e6d04ed3763014d7c26fcba93fea021850a11f025a0ecaceed97a"
+content-hash = "19b9ec329bbfd3eb115ff5dc8af1cbbee2614ffe9ba8008b8858999070ba1bcd"

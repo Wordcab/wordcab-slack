@@ -14,7 +14,7 @@ python-dotenv = ">=1.0.0"
 slack-bolt = ">=1.16.4"
 slackeventsapi = ">=3.0.1"
 uvicorn = ">=0.21.0"
-wordcab = ">=0.6.0"
+wordcab = ">=0.6.1"
 
 
 [tool.poetry.group.test.dependencies]

@@ -9,9 +9,9 @@ You can customize the summarization parameters by adding them to your message:
 - `summary_type`: the type of the output summary (more details on [Summary Types](https://docs.wordcab.com/docs/summary-types)).
     ↳ Can be `brief`, `narrative`, `conversational` or `no_speaker`.
 - `source_lang`: the language of the input text.
-    ↳ Can be `en` (English), `fr` (French), `de` (German), `es` (Spanish), `it` (Italian), `nl` (Dutch), `pt` (Portuguese) or `sv` (Swedish).
+    ↳ Can be `en` (English), `fr` (French), `de` (German), `es` (Spanish), `it` (Italian), `nl` (Dutch), `pt` (Portuguese) or `sv` (Swedish). e.g. `source_lang:en`
 - `target_lang`: the language of the output summary.
-    ↳ The same as `source_lang`.
+    ↳ The same as `source_lang`. If not specified, the output summary will be in the same language as the input text. e.g. `target_lang:fr`
 - `context`: the chosen context features to add to the output summary.
     ↳ Can be one or more between these values: `issue`, `purpose`, `next_steps`, `discussion_points` and `keywords`. Separate them with a comma (`,`) if you want to use more than one. e.g. `context:issue,purpose,keywords`.
 
