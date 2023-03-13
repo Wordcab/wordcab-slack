@@ -161,3 +161,39 @@ jobs:
       - name: Create coverage report
         run: |
           nox --session=coverage -- xml
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [quality, tests, coverage]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Push code to EC2
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.EC2_HOST }}
+          REMOTE_USER: ${{ secrets.EC2_USER }}
+          TARGET: ${{ secrets.EC2_TARGET }}
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git docker-compose
+
+      - name: SSH into EC2 and run the docker-compose
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd wordcab-slack
+            touch .env
+            echo "WORDCAB_API_KEY=${{ secrets.WORDCAB_API_KEY }}" >> .env
+            echo "SLACK_BOT_TOKEN=${{ secrets.SLACK_BOT_TOKEN }}" >> .env
+            echo "SLACK_SIGNING_SECRET=${{ secrets.SLACK_SIGNING_SECRET }}" >> .env
+            sudo docker rm -f $(docker ps -a -q -f "name=nginx" -f "name=slack-api") || true
+            sudo docker-compose build
+            sudo docker-compose up -d
