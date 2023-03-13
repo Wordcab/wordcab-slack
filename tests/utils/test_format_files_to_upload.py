@@ -8,7 +8,7 @@ from wordcab_slack.utils import format_files_to_upload
 
 
 @pytest.fixture
-def summary():
+def any_summary():
     """Return a BaseSummary object for testing."""
     items = [
         {"summary": "Lorem ipsum dolor sit amet."},
@@ -24,10 +24,33 @@ def summary():
     )
 
 
+@pytest.fixture
+def brief_summary():
+    """Return a BaseSummary object for testing."""
+    items = [
+        {
+            "title": "Title 1",
+            "brief_summary": "Lorem ipsum dolor sit amet. Consectetur adipiscing elit.",
+        },
+        {
+            "title": "Title 2",
+            "brief_summary": "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        },
+    ]
+    return BaseSummary(
+        job_status="completed",
+        summary_id="123",
+        summary={
+            "key": {"structured_summary": [StructuredSummary(**item) for item in items]}
+        },
+        summary_type="brief",
+    )
+
+
 @pytest.mark.asyncio
-async def test_summary_type(summary):
+async def test_any_summary_type(any_summary):
     """Test the format_files_to_upload function with a summary of type narrative."""
-    result = await format_files_to_upload(summary)
+    result = await format_files_to_upload(any_summary)
     assert result[0]["filename"] == "narrative_key_123.txt"
     assert (
         result[0]["file"].getvalue()

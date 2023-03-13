@@ -6,10 +6,15 @@ import io
 import re
 from ast import literal_eval
 from functools import partial
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 
 from wordcab import delete_job, retrieve_job, retrieve_summary, start_summary
-from wordcab.core_objects import AudioSource, BaseSummary, GenericSource
+from wordcab.core_objects import (
+    AudioSource,
+    BaseSummary,
+    GenericSource,
+    StructuredSummary,
+)
 
 from wordcab_slack.models import JobData
 
@@ -86,14 +91,20 @@ async def format_files_to_upload(summary: BaseSummary) -> List[Dict[str, io.Stri
     summary_type = summary.summary_type
     summary_id = summary.summary_id
 
-    file_uploads: List[Dict[str, io.StringIO]] = []
+    file_uploads: List[Dict[str, Union[str, io.StringIO]]] = []
     for key, val in summary.summary.items():
+        if summary_type == "brief":
+            file_content = await _format_brief_summary(val["structured_summary"])
+        else:
+            file_content = await _format_any_summary(val["structured_summary"])
+
+        if "context" in val:
+            file_content = await _add_context_to_summary(file_content, val["context"])
+
         file_uploads.append(
             {
                 "filename": f"{summary_type}_{key}_{summary_id}.txt",
-                "file": io.StringIO(
-                    " ".join([summary.summary for summary in val["structured_summary"]])
-                ),
+                "file": file_content,
                 "title": f"{summary_type}_{key}_{summary_id}",
                 "alt_text": f"Summary {summary_id} of type {summary_type} with a length of {key}.",
                 "snippet_type": "text",
@@ -101,6 +112,62 @@ async def format_files_to_upload(summary: BaseSummary) -> List[Dict[str, io.Stri
         )
 
     return file_uploads
+
+
+async def _add_context_to_summary(
+    summary: io.StringIO,
+    context: Dict[str, Union[str, List[str], Dict[str, Union[str, List[str]]]]],
+) -> io.StringIO:
+    """
+    Add the context to the summary.
+
+    Args:
+        summary (io.StringIO): The summary to add the context to
+        context (Dict[str, Union[str, List[str], Dict[str, Union[str, List[str]]]]]): The context to add to the summary
+
+    Returns:
+        io.StringIO: The summary with the context added
+    """
+    summary.seek(0)
+    summary_content = summary.read()
+
+    for k, v in context.items():
+        summary_content += f"\n\n{k}: {v}"
+
+    return io.StringIO(summary_content)
+
+
+async def _format_brief_summary(structured_summary: StructuredSummary) -> io.StringIO:
+    """
+    Format the brief summary to upload to Slack.
+
+    Args:
+        structured_summary (List[Dict[str, Any]]): The structured summary from wordcab-python
+
+    Returns:
+        str: The formatted brief summary
+    """
+    return io.StringIO(
+        "\n\n".join(
+            [
+                f"{summary.summary['title']}\n{summary.summary['brief_summary']}"
+                for summary in structured_summary
+            ]
+        )
+    )
+
+
+async def _format_any_summary(structured_summary: StructuredSummary) -> io.StringIO:
+    """
+    Format the summary to upload to Slack. For all summary types except brief.
+
+    Args:
+        summary (BaseSummary): The BaseSummary object from wordcab-python
+
+    Returns:
+        str: The formatted summary
+    """
+    return io.StringIO(" ".join([summary.summary for summary in structured_summary]))
 
 
 async def _get_file_names(urls: List[str]) -> List[str]:

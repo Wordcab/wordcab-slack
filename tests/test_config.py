@@ -3,8 +3,6 @@
 
 import os
 
-from wordcab.config import SOURCE_LANG
-
 from wordcab_slack.config import (
     EMOJI_FLAGS_MAP,
     EMOJI_NUMBERS_MAP,
@@ -35,8 +33,8 @@ def test_languages():
     """Test the LANGUAGES constant."""
     assert isinstance(LANGUAGES, list)
     assert len(LANGUAGES) > 0
-    assert len(LANGUAGES) == len(SOURCE_LANG)
-    assert LANGUAGES == SOURCE_LANG
+    assert len(LANGUAGES) == 8
+    assert LANGUAGES == ["de", "en", "es", "fr", "it", "pt", "nl", "sv"]
 
 
 def test_emoji_flags_map():
@@ -71,7 +69,7 @@ def test_summary_types():
     assert isinstance(SUMMARY_TYPES, list)
     assert len(SUMMARY_TYPES) > 0
     assert len(SUMMARY_TYPES) == 4
-    assert "narrative" in SUMMARY_TYPES
+    assert "brief" in SUMMARY_TYPES
     assert "conversational" in SUMMARY_TYPES
+    assert "narrative" in SUMMARY_TYPES
     assert "no_speaker" in SUMMARY_TYPES
-    assert "reason_conclusion" in SUMMARY_TYPES

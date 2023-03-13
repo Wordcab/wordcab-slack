@@ -4,7 +4,6 @@
 import os
 
 from dotenv import load_dotenv
-from wordcab.config import SOURCE_LANG
 
 
 load_dotenv()
@@ -31,8 +30,8 @@ EMOJI_NUMBERS_MAP = {
     9: "nine",
     10: "ten",
 }
-LANGUAGES = SOURCE_LANG
+LANGUAGES = ["de", "en", "es", "fr", "it", "pt", "nl", "sv"]
 SLACK_BOT_TOKEN = os.getenv("SLACK_BOT_TOKEN")
 SLACK_SIGNING_SECRET = os.getenv("SLACK_SIGNING_SECRET")
-SUMMARY_TYPES = ["narrative", "conversational", "no_speaker", "reason_conclusion"]
+SUMMARY_TYPES = ["brief", "narrative", "conversational", "no_speaker"]
 WORDCAB_API_KEY = os.getenv("WORDCAB_API_KEY")
