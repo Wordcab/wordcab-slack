@@ -178,25 +178,26 @@ tests-no-zope = ["cloudpickle", "cloudpickle", "hypothesis", "hypothesis", "mypy
 
 [[package]]
 name = "bandit"
-version = "1.7.4"
+version = "1.7.5"
 description = "Security oriented static analyser for python code."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "bandit-1.7.4-py3-none-any.whl", hash = "sha256:412d3f259dab4077d0e7f0c11f50f650cc7d10db905d98f6520a95a18049658a"},
-    {file = "bandit-1.7.4.tar.gz", hash = "sha256:2d63a8c573417bae338962d4b9b06fbc6080f74ecd955a092849e1e65c717bd2"},
+    {file = "bandit-1.7.5-py3-none-any.whl", hash = "sha256:75665181dc1e0096369112541a056c59d1c5f66f9bb74a8d686c3c362b83f549"},
+    {file = "bandit-1.7.5.tar.gz", hash = "sha256:bdfc739baa03b880c2d15d0431b31c658ffc348e907fe197e54e0389dd59e11e"},
 ]
 
 [package.dependencies]
 colorama = {version = ">=0.3.9", markers = "platform_system == \"Windows\""}
 GitPython = ">=1.0.1"
 PyYAML = ">=5.3.1"
+rich = "*"
 stevedore = ">=1.20.0"
 
 [package.extras]
-test = ["beautifulsoup4 (>=4.8.0)", "coverage (>=4.5.4)", "fixtures (>=3.0.0)", "flake8 (>=4.0.0)", "pylint (==1.9.4)", "stestr (>=2.5.0)", "testscenarios (>=0.5.0)", "testtools (>=2.3.0)", "toml"]
-toml = ["toml"]
+test = ["beautifulsoup4 (>=4.8.0)", "coverage (>=4.5.4)", "fixtures (>=3.0.0)", "flake8 (>=4.0.0)", "pylint (==1.9.4)", "stestr (>=2.5.0)", "testscenarios (>=0.5.0)", "testtools (>=2.3.0)", "tomli (>=1.1.0)"]
+toml = ["tomli (>=1.1.0)"]
 yaml = ["PyYAML"]
 
 [[package]]
@@ -489,14 +490,14 @@ files = [
 
 [[package]]
 name = "exceptiongroup"
-version = "1.1.0"
+version = "1.1.1"
 description = "Backport of PEP 654 (exception groups)"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "exceptiongroup-1.1.0-py3-none-any.whl", hash = "sha256:327cbda3da756e2de031a3107b81ab7b3770a602c4d16ca618298c526f4bec1e"},
-    {file = "exceptiongroup-1.1.0.tar.gz", hash = "sha256:bcb67d800a4497e1b404c2dd44fca47d3b7a5e5433dbab67f96c1a685cdfdf23"},
+    {file = "exceptiongroup-1.1.1-py3-none-any.whl", hash = "sha256:232c37c63e4f682982c8b6459f33a8981039e5fb8756b2074364e5055c498c9e"},
+    {file = "exceptiongroup-1.1.1.tar.gz", hash = "sha256:d484c3090ba2889ae2928419117447a14daf3c1231d5e30d0aae34f354f01785"},
 ]
 
 [package.extras]
@@ -504,25 +505,25 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "fastapi"
-version = "0.93.0"
+version = "0.94.0"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "fastapi-0.93.0-py3-none-any.whl", hash = "sha256:d6e6db5f096d67b475e2a09e1124983554f634fad50297de85fc3de0583df13a"},
-    {file = "fastapi-0.93.0.tar.gz", hash = "sha256:c2944febec6da706f4c82cdfa0de48afda960c8fbde29dec88697d55a67d7718"},
+    {file = "fastapi-0.94.0-py3-none-any.whl", hash = "sha256:898d7f6616dea49e78fa00e34401f9ace238fc670aafe4e30a16a384e3a671e1"},
+    {file = "fastapi-0.94.0.tar.gz", hash = "sha256:08ce0bc6f381ef1b6431e84a31d26eca0b60d6e1ac575adba4af95cc5a36cb62"},
 ]
 
 [package.dependencies]
 pydantic = ">=1.6.2,<1.7 || >1.7,<1.7.1 || >1.7.1,<1.7.2 || >1.7.2,<1.7.3 || >1.7.3,<1.8 || >1.8,<1.8.1 || >1.8.1,<2.0.0"
-starlette = ">=0.25.0,<0.26.0"
+starlette = ">=0.26.0,<0.27.0"
 
 [package.extras]
 all = ["email-validator (>=1.1.1)", "httpx (>=0.23.0)", "itsdangerous (>=1.1.0)", "jinja2 (>=2.11.2)", "orjson (>=3.2.1)", "python-multipart (>=0.0.5)", "pyyaml (>=5.3.1)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0)", "uvicorn[standard] (>=0.12.0)"]
 dev = ["pre-commit (>=2.17.0,<3.0.0)", "ruff (==0.0.138)", "uvicorn[standard] (>=0.12.0,<0.21.0)"]
 doc = ["mdx-include (>=1.4.1,<2.0.0)", "mkdocs (>=1.1.2,<2.0.0)", "mkdocs-markdownextradata-plugin (>=0.1.7,<0.3.0)", "mkdocs-material (>=8.1.4,<9.0.0)", "pyyaml (>=5.3.1,<7.0.0)", "typer-cli (>=0.0.13,<0.0.14)", "typer[all] (>=0.6.1,<0.8.0)"]
-test = ["anyio[trio] (>=3.2.1,<4.0.0)", "black (==22.10.0)", "coverage[toml] (>=6.5.0,<8.0)", "databases[sqlite] (>=0.3.2,<0.7.0)", "email-validator (>=1.1.1,<2.0.0)", "flask (>=1.1.2,<3.0.0)", "httpx (>=0.23.0,<0.24.0)", "isort (>=5.0.6,<6.0.0)", "mypy (==0.982)", "orjson (>=3.2.1,<4.0.0)", "passlib[bcrypt] (>=1.7.2,<2.0.0)", "peewee (>=3.13.3,<4.0.0)", "pytest (>=7.1.3,<8.0.0)", "python-jose[cryptography] (>=3.3.0,<4.0.0)", "python-multipart (>=0.0.5,<0.0.6)", "pyyaml (>=5.3.1,<7.0.0)", "ruff (==0.0.138)", "sqlalchemy (>=1.3.18,<1.4.43)", "types-orjson (==3.6.2)", "types-ujson (==5.6.0.0)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0,<6.0.0)"]
+test = ["anyio[trio] (>=3.2.1,<4.0.0)", "black (==23.1.0)", "coverage[toml] (>=6.5.0,<8.0)", "databases[sqlite] (>=0.3.2,<0.7.0)", "email-validator (>=1.1.1,<2.0.0)", "flask (>=1.1.2,<3.0.0)", "httpx (>=0.23.0,<0.24.0)", "isort (>=5.0.6,<6.0.0)", "mypy (==0.982)", "orjson (>=3.2.1,<4.0.0)", "passlib[bcrypt] (>=1.7.2,<2.0.0)", "peewee (>=3.13.3,<4.0.0)", "pytest (>=7.1.3,<8.0.0)", "python-jose[cryptography] (>=3.3.0,<4.0.0)", "python-multipart (>=0.0.5,<0.0.7)", "pyyaml (>=5.3.1,<7.0.0)", "ruff (==0.0.138)", "sqlalchemy (>=1.3.18,<1.4.43)", "types-orjson (==3.6.2)", "types-ujson (==5.7.0.1)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0,<6.0.0)"]
 
 [[package]]
 name = "filelock"
@@ -575,14 +576,14 @@ flake8 = ">=5.0.0"
 
 [[package]]
 name = "flake8-bugbear"
-version = "23.2.13"
+version = "23.3.12"
 description = "A plugin for flake8 finding likely bugs and design problems in your program. Contains warnings that don't belong in pyflakes and pycodestyle."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "flake8-bugbear-23.2.13.tar.gz", hash = "sha256:39259814a83f33c8409417ee12dd4050c9c0bb4c8707c12fc18ae62b2f3ddee1"},
-    {file = "flake8_bugbear-23.2.13-py3-none-any.whl", hash = "sha256:f136bd0ca2684f101168bba2310dec541e11aa6b252260c17dcf58d18069a740"},
+    {file = "flake8-bugbear-23.3.12.tar.gz", hash = "sha256:e3e7f74c8a49ad3794a7183353026dabd68c74030d5f46571f84c1fb0eb79363"},
+    {file = "flake8_bugbear-23.3.12-py3-none-any.whl", hash = "sha256:beb5c7efcd7ccc2039ef66a77bb8db925e7be3531ff1cb4d0b7030d0e2113d72"},
 ]
 
 [package.dependencies]
@@ -804,14 +805,14 @@ socks = ["socksio (>=1.0.0,<2.0.0)"]
 
 [[package]]
 name = "identify"
-version = "2.5.19"
+version = "2.5.20"
 description = "File identification library for Python"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "identify-2.5.19-py2.py3-none-any.whl", hash = "sha256:3ee3533e7f6f5023157fbebbd5687bb4b698ce6f305259e0d24b2d7d9efb72bc"},
-    {file = "identify-2.5.19.tar.gz", hash = "sha256:4102ecd051f6884449e7359e55b38ba6cd7aafb6ef27b8e2b38495a5723ea106"},
+    {file = "identify-2.5.20-py2.py3-none-any.whl", hash = "sha256:5dfef8a745ca4f2c95f27e9db74cb4c8b6d9916383988e8791f3595868f78a33"},
+    {file = "identify-2.5.20.tar.gz", hash = "sha256:c8b288552bc5f05a08aff09af2f58e6976bf8ac87beb38498a0e3d98ba64eb18"},
 ]
 
 [package.extras]
@@ -909,6 +910,31 @@ win32-setctime = {version = ">=1.0.0", markers = "sys_platform == \"win32\""}
 dev = ["Sphinx (>=4.1.1)", "black (>=19.10b0)", "colorama (>=0.3.4)", "docutils (==0.16)", "flake8 (>=3.7.7)", "isort (>=5.1.1)", "pytest (>=4.6.2)", "pytest-cov (>=2.7.1)", "sphinx-autobuild (>=0.7.1)", "sphinx-rtd-theme (>=0.4.3)", "tox (>=3.9.0)"]
 
 [[package]]
+name = "markdown-it-py"
+version = "2.2.0"
+description = "Python port of markdown-it. Markdown parsing, done right!"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "markdown-it-py-2.2.0.tar.gz", hash = "sha256:7c9a5e412688bc771c67432cbfebcdd686c93ce6484913dccf06cb5a0bea35a1"},
+    {file = "markdown_it_py-2.2.0-py3-none-any.whl", hash = "sha256:5a35f8d1870171d9acc47b99612dc146129b631baf04970128b568f190d0cc30"},
+]
+
+[package.dependencies]
+mdurl = ">=0.1,<1.0"
+
+[package.extras]
+benchmarking = ["psutil", "pytest", "pytest-benchmark"]
+code-style = ["pre-commit (>=3.0,<4.0)"]
+compare = ["commonmark (>=0.9,<1.0)", "markdown (>=3.4,<4.0)", "mistletoe (>=1.0,<2.0)", "mistune (>=2.0,<3.0)", "panflute (>=2.3,<3.0)"]
+linkify = ["linkify-it-py (>=1,<3)"]
+plugins = ["mdit-py-plugins"]
+profiling = ["gprof2dot"]
+rtd = ["attrs", "myst-parser", "pyyaml", "sphinx", "sphinx-copybutton", "sphinx-design", "sphinx_book_theme"]
+testing = ["coverage", "pytest", "pytest-cov", "pytest-regressions"]
+
+[[package]]
 name = "markupsafe"
 version = "2.1.2"
 description = "Safely add untrusted strings to HTML/XML markup."
@@ -978,6 +1004,18 @@ python-versions = ">=3.6"
 files = [
     {file = "mccabe-0.7.0-py2.py3-none-any.whl", hash = "sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e"},
     {file = "mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325"},
+]
+
+[[package]]
+name = "mdurl"
+version = "0.1.2"
+description = "Markdown URL utilities"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8"},
+    {file = "mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba"},
 ]
 
 [[package]]
@@ -1129,14 +1167,14 @@ files = [
 
 [[package]]
 name = "platformdirs"
-version = "3.1.0"
+version = "3.1.1"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "platformdirs-3.1.0-py3-none-any.whl", hash = "sha256:13b08a53ed71021350c9e300d4ea8668438fb0046ab3937ac9a29913a1a1350a"},
-    {file = "platformdirs-3.1.0.tar.gz", hash = "sha256:accc3665857288317f32c7bebb5a8e482ba717b474f3fc1d18ca7f9214be0cef"},
+    {file = "platformdirs-3.1.1-py3-none-any.whl", hash = "sha256:e5986afb596e4bb5bde29a79ac9061aa955b94fca2399b7aaac4090860920dd8"},
+    {file = "platformdirs-3.1.1.tar.gz", hash = "sha256:024996549ee88ec1a9aa99ff7f8fc819bb59e2c3477b410d90a16d32d6e707aa"},
 ]
 
 [package.extras]
@@ -1303,6 +1341,21 @@ files = [
     {file = "pyflakes-3.0.1-py2.py3-none-any.whl", hash = "sha256:ec55bf7fe21fff7f1ad2f7da62363d749e2a470500eab1b555334b67aa1ef8cf"},
     {file = "pyflakes-3.0.1.tar.gz", hash = "sha256:ec8b276a6b60bd80defed25add7e439881c19e64850afd9b346283d4165fd0fd"},
 ]
+
+[[package]]
+name = "pygments"
+version = "2.14.0"
+description = "Pygments is a syntax highlighting package written in Python."
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "Pygments-2.14.0-py3-none-any.whl", hash = "sha256:fa7bd7bd2771287c0de303af8bfdfc731f51bd2c6a47ab69d117138893b82717"},
+    {file = "Pygments-2.14.0.tar.gz", hash = "sha256:b3ed06a9e8ac9a9aae5a6f5dbe78a8a58655d17b43b93c078f094ddc476ae297"},
+]
+
+[package.extras]
+plugins = ["importlib-metadata"]
 
 [[package]]
 name = "pytest"
@@ -1486,6 +1539,25 @@ idna = {version = "*", optional = true, markers = "extra == \"idna2008\""}
 idna2008 = ["idna"]
 
 [[package]]
+name = "rich"
+version = "13.3.2"
+description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
+category = "dev"
+optional = false
+python-versions = ">=3.7.0"
+files = [
+    {file = "rich-13.3.2-py3-none-any.whl", hash = "sha256:a104f37270bf677148d8acb07d33be1569eeee87e2d1beb286a4e9113caf6f2f"},
+    {file = "rich-13.3.2.tar.gz", hash = "sha256:91954fe80cfb7985727a467ca98a7618e5dd15178cc2da10f553b36a93859001"},
+]
+
+[package.dependencies]
+markdown-it-py = ">=2.2.0,<3.0.0"
+pygments = ">=2.13.0,<3.0.0"
+
+[package.extras]
+jupyter = ["ipywidgets (>=7.5.1,<9)"]
+
+[[package]]
 name = "ruamel-yaml"
 version = "0.17.21"
 description = "ruamel.yaml is a YAML parser/emitter that supports roundtrip preservation of comments, seq/map flow style, and map key order"
@@ -1567,21 +1639,21 @@ testing-integration = ["build[virtualenv]", "filelock (>=3.4.0)", "jaraco.envs (
 
 [[package]]
 name = "slack-bolt"
-version = "1.16.3"
+version = "1.16.4"
 description = "The Bolt Framework for Python"
 category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "slack_bolt-1.16.3-py2.py3-none-any.whl", hash = "sha256:b97c063d17c1f3514da2738a9b70ef4a60be70df1911690391544d7850fc099a"},
-    {file = "slack_bolt-1.16.3.tar.gz", hash = "sha256:6b1680c6f6b441d7f3d9ae10ba16a64e76f0bd0eb9ebc60fe4ba84b1e255c653"},
+    {file = "slack_bolt-1.16.4-py2.py3-none-any.whl", hash = "sha256:21819e680b9ac64e9228ba3d586367bf550710c16d0f4dc1729fc81f7ec1ac55"},
+    {file = "slack_bolt-1.16.4.tar.gz", hash = "sha256:3b4eeb72a7ecbfc83957de20d72196dfcef7b705bef8124719d703f7156094db"},
 ]
 
 [package.dependencies]
-slack-sdk = ">=3.18.5,<4"
+slack-sdk = ">=3.20.2,<4"
 
 [package.extras]
-adapter = ["CherryPy (>=18,<19)", "Django (>=3,<5)", "Flask (>=1,<3)", "Werkzeug (>=2,<3)", "boto3 (<=2)", "bottle (>=0.12,<1)", "chalice (>=1.27.3,<2)", "falcon (>=2,<4)", "fastapi (>=0.70.0,<1)", "gunicorn (>=20,<21)", "pyramid (>=1,<3)", "sanic (>=22,<23)", "starlette (>=0.14,<1)", "tornado (>=6,<7)", "uvicorn (<1)", "websocket-client (>=1.2.3,<2)"]
+adapter = ["CherryPy (>=18,<19)", "Django (>=3,<5)", "Flask (>=1,<3)", "Werkzeug (>=2,<3)", "boto3 (<=2)", "bottle (>=0.12,<1)", "chalice (<=1.27.3)", "falcon (>=2,<4)", "fastapi (>=0.70.0,<1)", "gunicorn (>=20,<21)", "pyramid (>=1,<3)", "sanic (>=22,<23)", "starlette (>=0.14,<1)", "tornado (>=6,<7)", "uvicorn (<1)", "websocket-client (>=1.2.3,<2)"]
 adapter-testing = ["Flask (>=1,<2)", "Werkzeug (>=1,<2)", "boddle (>=0.2,<0.3)", "docker (>=5,<6)", "moto (>=3,<4)", "requests (>=2,<3)", "sanic-testing (>=0.7)"]
 async = ["aiohttp (>=3,<4)", "websockets (>=10,<11)"]
 testing = ["Flask-Sockets (>=0.2,<1)", "Jinja2 (==3.0.3)", "Werkzeug (>=1,<2)", "aiohttp (>=3,<4)", "black (==22.8.0)", "click (<=8.0.4)", "itsdangerous (==2.0.1)", "pytest (>=6.2.5,<7)", "pytest-asyncio (>=0.18.2,<1)", "pytest-cov (>=3,<4)"]
@@ -1589,14 +1661,14 @@ testing-without-asyncio = ["Flask-Sockets (>=0.2,<1)", "Jinja2 (==3.0.3)", "Werk
 
 [[package]]
 name = "slack-sdk"
-version = "3.20.1"
+version = "3.20.2"
 description = "The Slack API Platform SDK for Python"
 category = "main"
 optional = false
 python-versions = ">=3.6.0"
 files = [
-    {file = "slack_sdk-3.20.1-py2.py3-none-any.whl", hash = "sha256:a23aa223fe52238196000afddef380292ea27148846ba31cc80c3fbc018bcfc8"},
-    {file = "slack_sdk-3.20.1.tar.gz", hash = "sha256:0ba2eca9f0aeb66cc893a768e7ad2cdd74260c394b9b51666d4b665664d0cadd"},
+    {file = "slack_sdk-3.20.2-py2.py3-none-any.whl", hash = "sha256:224fcb4fef9575226e76555d9a0acdbd93d7596a416bc3ae7b443b3b64e9f0e3"},
+    {file = "slack_sdk-3.20.2.tar.gz", hash = "sha256:f61db1f6e49dd2ee84e82ddb5d1c5db7a5987b8be9ba975dc00799334c84f8cd"},
 ]
 
 [package.extras]
@@ -1657,14 +1729,14 @@ files = [
 
 [[package]]
 name = "starlette"
-version = "0.25.0"
+version = "0.26.0.post1"
 description = "The little ASGI library that shines."
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "starlette-0.25.0-py3-none-any.whl", hash = "sha256:774f1df1983fd594b9b6fb3ded39c2aa1979d10ac45caac0f4255cbe2acb8628"},
-    {file = "starlette-0.25.0.tar.gz", hash = "sha256:854c71e73736c429c2bdb07801f2c76c9cba497e7c3cf4988fde5e95fe4cdb3c"},
+    {file = "starlette-0.26.0.post1-py3-none-any.whl", hash = "sha256:5b80b546ed60d43da45f80113c05ff9f4c44fae95ee884945958eba685c56253"},
+    {file = "starlette-0.26.0.post1.tar.gz", hash = "sha256:af0e54d08afed70fcbc53ae01e71c9c62c8ab038ff8cfd3f7477bf0f086b5ab4"},
 ]
 
 [package.dependencies]
@@ -1726,14 +1798,14 @@ files = [
 
 [[package]]
 name = "urllib3"
-version = "1.26.14"
+version = "1.26.15"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
 files = [
-    {file = "urllib3-1.26.14-py2.py3-none-any.whl", hash = "sha256:75edcdc2f7d85b137124a6c3c9fc3933cdeaa12ecb9a6a959f22797a0feca7e1"},
-    {file = "urllib3-1.26.14.tar.gz", hash = "sha256:076907bf8fd355cde77728471316625a4d2f7e713c125f51953bb5b3eecf4f72"},
+    {file = "urllib3-1.26.15-py2.py3-none-any.whl", hash = "sha256:aa751d169e23c7479ce47a0cb0da579e3ede798f994f5816a74e4f4500dcea42"},
+    {file = "urllib3-1.26.15.tar.gz", hash = "sha256:8a388717b9476f934a21484e8c8e61875ab60644d29b9b39e11e4b9dc1c6b305"},
 ]
 
 [package.extras]
@@ -1743,14 +1815,14 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "uvicorn"
-version = "0.20.0"
+version = "0.21.0"
 description = "The lightning-fast ASGI server."
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "uvicorn-0.20.0-py3-none-any.whl", hash = "sha256:c3ed1598a5668208723f2bb49336f4509424ad198d6ab2615b7783db58d919fd"},
-    {file = "uvicorn-0.20.0.tar.gz", hash = "sha256:a4e12017b940247f836bc90b72e725d7dfd0c8ed1c51eb365f5ba30d9f5127d8"},
+    {file = "uvicorn-0.21.0-py3-none-any.whl", hash = "sha256:e69e955cb621ae7b75f5590a814a4fcbfb14cb8f44a36dfe3c5c75ab8aee3ad5"},
+    {file = "uvicorn-0.21.0.tar.gz", hash = "sha256:8635a388062222082f4b06225b867b74a7e4ef942124453d4d1d1a5cb3750932"},
 ]
 
 [package.dependencies]
@@ -1779,14 +1851,14 @@ test = ["flake8 (>=2.4.0)", "isort (>=4.2.2)", "pytest (>=2.2.3)"]
 
 [[package]]
 name = "virtualenv"
-version = "20.20.0"
+version = "20.21.0"
 description = "Virtual Python Environment builder"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "virtualenv-20.20.0-py3-none-any.whl", hash = "sha256:3c22fa5a7c7aa106ced59934d2c20a2ecb7f49b4130b8bf444178a16b880fa45"},
-    {file = "virtualenv-20.20.0.tar.gz", hash = "sha256:a8a4b8ca1e28f864b7514a253f98c1d62b64e31e77325ba279248c65fb4fcef4"},
+    {file = "virtualenv-20.21.0-py3-none-any.whl", hash = "sha256:31712f8f2a17bd06234fa97fdf19609e789dd4e3e4bf108c3da71d710651adbc"},
+    {file = "virtualenv-20.21.0.tar.gz", hash = "sha256:f50e3e60f990a0757c9b68333c9fdaa72d7188caa417f96af9e52407831a3b68"},
 ]
 
 [package.dependencies]
@@ -1833,14 +1905,14 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 
 [[package]]
 name = "wordcab"
-version = "0.5.4"
+version = "0.6.0"
 description = "Wordcab Python SDK"
 category = "main"
 optional = false
-python-versions = ">=3.7,<4.0"
+python-versions = ">=3.8,<4.0"
 files = [
-    {file = "wordcab-0.5.4-py3-none-any.whl", hash = "sha256:b6c386a4c0c609990b644e5e3694652fa8ac970d086966d82926adf3bf5307cd"},
-    {file = "wordcab-0.5.4.tar.gz", hash = "sha256:178ad7bbfdd2b7a3e83db3f832ff957ae734a548353fd92450a0ff0fddeee6d4"},
+    {file = "wordcab-0.6.0-py3-none-any.whl", hash = "sha256:a99becff6f52561839124702f729a89a699342f0d8b598c710db55934ead7cad"},
+    {file = "wordcab-0.6.0.tar.gz", hash = "sha256:8cf0222eb06f2130171c1ef8904493d9af1d1cd3694d82251aaf0300b2cb5c1a"},
 ]
 
 [package.dependencies]
@@ -1939,4 +2011,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<4.0"
-content-hash = "36456b56a6c93ecfb29e76c760022da971096348a52df8d57961ec3221755963"
+content-hash = "aed79ab0949e6d04ed3763014d7c26fcba93fea021850a11f025a0ecaceed97a"
