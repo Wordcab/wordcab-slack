@@ -157,7 +157,7 @@ async def get_summarization_params(
     if not context_features:
         context_features = None
     elif isinstance(context_features, list):
-        context_features = context_features[0].split(",")
+        context_features = context_features[0].split()[0].split(",")
 
     return summary_length, summary_type, source_lang, target_lang, context_features
 

@@ -109,3 +109,12 @@ async def test_with_user_mentions_and_params(available_summary_types) -> None:
     expected = ([3], ["no_speaker"], "de", "de", None)
     result = await get_summarization_params(text, available_summary_types)
     assert result == expected
+
+
+@pytest.mark.asyncio
+async def test_with_params_in_different_order(available_summary_types) -> None:
+    """Test the get_summarization_params function with params in different order."""
+    text = "context:issue,purpose source_lang:de 3 brief"
+    expected = ([3], ["brief"], "de", "de", ["issue", "purpose"])
+    result = await get_summarization_params(text, available_summary_types)
+    assert result == expected
