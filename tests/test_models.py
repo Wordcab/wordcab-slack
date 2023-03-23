@@ -62,20 +62,6 @@ def invalid_summary_length():
     }
 
 
-@pytest.fixture
-def invalid_context_features():
-    """Fixture for invalid context features."""
-    return {
-        "summary_length": [100, 200],
-        "summary_type": ["text", "audio"],
-        "source_lang": "en",
-        "target_lang": "en",
-        "context_features": [1, 2],
-        "urls": ["example.com"],
-        "msg_id": "1234",
-    }
-
-
 def test_valid_job_data(valid_data):
     """Test valid job data."""
     job_data = JobData(**valid_data)

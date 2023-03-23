@@ -39,7 +39,9 @@ async def _check_file_extension(
     return file_extension
 
 
-async def delete_finished_jobs(job_names: List[str], api_key: str) -> None:
+async def delete_finished_jobs(
+    job_names: List[str], api_key: str
+) -> None:  # pragma: no cover
     """
     Delete the job from wordcab.
 
@@ -160,7 +162,7 @@ async def get_summarization_params(
     return summary_length, summary_type, source_lang, target_lang, context_features
 
 
-async def get_summary(summary_id: str, api_key: str) -> BaseSummary:
+async def get_summary(summary_id: str, api_key: str) -> BaseSummary:  # pragma: no cover
     """
     Get the summary from the summary_id.
 
@@ -220,7 +222,7 @@ async def _launch_job_tasks(
     return job_names
 
 
-async def monitor_job_status(job_name: str, api_key: str) -> str:
+async def monitor_job_status(job_name: str, api_key: str) -> str:  # pragma: no cover
     """
     Monitor the job status and return the summary_id when the job is done.
 
@@ -257,7 +259,7 @@ async def _summarization_task(
     accepted_generic_formats: List[str],
     bot_token: str,
     api_key: str,
-) -> str:
+) -> str:  # pragma: no cover
     """
     Launch a summarization job based on the input parameters and return the job name.
 
