@@ -132,17 +132,22 @@ async def format_files_to_upload(summary: BaseSummary) -> List[Dict[str, io.Stri
     return file_uploads
 
 
-async def _get_file_names(urls: List[str]) -> List[str]:
+async def _get_file_names(data: JobData) -> List[str]:
     """
-    Get the file names from the urls.
+    Get the file names from the data.
 
     Args:
-        urls (List[str]): The list of urls to get the file names from
+        data (JobData): The JobData object
 
     Returns:
         List[str]: The list of file names
     """
-    return [url.split("/")[-1] for url in urls]
+    if data.urls is not None:
+        return [url.split("/")[-1] for url in data.urls]
+    elif data.transcript_ids is not None:
+        return [tid for tid in data.transcript_ids]
+    else:
+        return []
 
 
 async def get_summarization_params(
@@ -224,29 +229,26 @@ async def _launch_job_tasks(
         accepted_audio_formats (List[str]): The list of accepted audio formats
         accepted_generic_formats (List[str]): The list of accepted generic formats
         bot_token (str): The Slack bot token
-        api_key (str): The Wordcab api key
+        api_key (str): The Wordcab api key to use for the summarization
 
     Returns:
         List[str]: The list of job names
     """
-    if job.urls is None:
-        if job.transcript_ids is None:
-            raise ValueError("Either urls or transcript_ids must be provided.")
-        else:
-            tasks = [
-                _transcript_summarization_task(
-                    transcript_id=transcript_id,
-                    summary_type=summary_type,
-                    source_lang=job.source_lang,
-                    target_lang=job.target_lang,
-                    context_features=job.context_features,
-                    summary_lens=job.summary_length,
-                    api_key=api_key,
-                )
-                for summary_type in job.summary_type
-                for transcript_id in job.transcript_ids
-            ]
-    else:
+    if job.transcript_ids:
+        tasks = [
+            _transcript_summarization_task(
+                transcript_id=transcript_id,
+                summary_type=summary_type,
+                source_lang=job.source_lang,
+                target_lang=job.target_lang,
+                context_features=job.context_features,
+                summary_lens=job.summary_length,
+                api_key=api_key,
+            )
+            for summary_type in job.summary_type
+            for transcript_id in job.transcript_ids
+        ]
+    elif job.urls:
         tasks = [
             _url_summarization_task(
                 url=url,

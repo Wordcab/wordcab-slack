@@ -475,7 +475,7 @@ class WorcabSlackBot:
                         bot_token=self.slack_bot_token,
                         api_key=self.wordcab_api_key,
                     )
-                    file_names = await _get_file_names(urls=job["data"].urls)
+                    file_names = await _get_file_names(data=job["data"])
                     job["status"] = "success"
                     job["job_names"] = job_names
                     job["file_names"] = file_names
