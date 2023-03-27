@@ -168,7 +168,7 @@ class WorcabSlackBot:
                     thread_ts=body["event"]["ts"],
                     text=self.bot_description,
                 )
-            elif "transcript_id:":
+            elif "transcript_id:" in body["event"]["text"]:
                 try:
                     text, _, channel, msg_id = await extract_info(body=body)
                     text, transcript_ids = await extract_transcript_ids(text)
