@@ -22,4 +22,7 @@ class JobData(BaseModel):
     def __init__(self, **data):
         """Set the number of tasks to be run."""
         super().__init__(**data)
-        self.num_tasks = len(self.urls) * len(self.summary_type)
+        if self.urls:
+            self.num_tasks = len(self.urls) * len(self.summary_type)
+        elif self.transcript_ids:
+            self.num_tasks = len(self.transcript_ids) * len(self.summary_type)
