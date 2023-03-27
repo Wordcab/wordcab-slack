@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock
 import pytest
 import pytest_mock
 
-from wordcab_slack.utils import _summarization_task
+from wordcab_slack.utils import _url_summarization_task
 
 
 @pytest.mark.asyncio
@@ -42,7 +42,7 @@ async def test_summarization_task_with_invalid_file(
         mock_start_summary = AsyncMock()
         mocker.patch("wordcab.api.start_summary", mock_start_summary)
 
-        await _summarization_task(
+        await _url_summarization_task(
             url=url,
             summary_type=summary_type,
             source_lang=source_lang,

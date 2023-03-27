@@ -8,7 +8,12 @@ from functools import partial
 from typing import Dict, List, Tuple, Union
 
 from wordcab import delete_job, retrieve_job, retrieve_summary, start_summary
-from wordcab.core_objects import AudioSource, BaseSummary, GenericSource
+from wordcab.core_objects import (
+    AudioSource,
+    BaseSummary,
+    GenericSource,
+    WordcabTranscriptSource,
+)
 
 from wordcab_slack.models import JobData
 
@@ -67,11 +72,34 @@ async def extract_info(body: Dict[str, str]) -> Tuple[str, List[str], str, str]:
         Tuple[str, List[str], str, str]: The text, file_ids, channel and message id
     """
     text = body["event"]["text"]
-    file_ids = [file["id"] for file in body["event"]["files"]]
+    file_ids = (
+        [file["id"] for file in body["event"]["files"]]
+        if "files" in body["event"]
+        else None
+    )
     channel = body["event"]["channel"]
     msg_id = body["event"]["ts"]
 
     return text, file_ids, channel, msg_id
+
+
+async def extract_transcript_ids(text: str) -> Tuple[str, str]:
+    """
+    Extract the transcript ids from the Slack event text and return it with the text without the transcript id.
+
+    Args:
+        text (str): The Slack event text
+
+    Returns:
+        Tuple[str, str]: The text without the transcript id and the transcript id
+    """
+    transcript_id = re.findall(r"transcript_id:\w+", text)
+    transcript_id = [tid.split(":")[-1] for tid in transcript_id]
+
+    text = re.sub(r"transcript_id:\w+", "", text)
+    text = text.strip()
+
+    return text, transcript_id
 
 
 async def format_files_to_upload(summary: BaseSummary) -> List[Dict[str, io.StringIO]]:
@@ -201,22 +229,40 @@ async def _launch_job_tasks(
     Returns:
         List[str]: The list of job names
     """
-    tasks = [
-        _summarization_task(
-            url=url,
-            summary_type=summary_type,
-            source_lang=job.source_lang,
-            target_lang=job.target_lang,
-            context_features=job.context_features,
-            summary_lens=job.summary_length,
-            accepted_audio_formats=accepted_audio_formats,
-            accepted_generic_formats=accepted_generic_formats,
-            bot_token=bot_token,
-            api_key=api_key,
-        )
-        for summary_type in job.summary_type
-        for url in job.urls
-    ]
+    if job.urls is None:
+        if job.transcript_ids is None:
+            raise ValueError("Either urls or transcript_ids must be provided.")
+        else:
+            tasks = [
+                _transcript_summarization_task(
+                    transcript_id=transcript_id,
+                    summary_type=summary_type,
+                    source_lang=job.source_lang,
+                    target_lang=job.target_lang,
+                    context_features=job.context_features,
+                    summary_lens=job.summary_length,
+                    api_key=api_key,
+                )
+                for summary_type in job.summary_type
+                for transcript_id in job.transcript_ids
+            ]
+    else:
+        tasks = [
+            _url_summarization_task(
+                url=url,
+                summary_type=summary_type,
+                source_lang=job.source_lang,
+                target_lang=job.target_lang,
+                context_features=job.context_features,
+                summary_lens=job.summary_length,
+                accepted_audio_formats=accepted_audio_formats,
+                accepted_generic_formats=accepted_generic_formats,
+                bot_token=bot_token,
+                api_key=api_key,
+            )
+            for summary_type in job.summary_type
+            for url in job.urls
+        ]
     job_names = await asyncio.gather(*tasks)
 
     return job_names
@@ -248,7 +294,52 @@ async def monitor_job_status(job_name: str, api_key: str) -> str:  # pragma: no 
     return job.summary_details["summary_id"]
 
 
-async def _summarization_task(
+async def _transcript_summarization_task(
+    transcript_id: str,
+    summary_type: str,
+    source_lang: str,
+    target_lang: str,
+    context_features: Union[List[str], None],
+    summary_lens: List[int],
+    api_key: str,
+) -> str:  # pragma: no cover
+    """
+    Launch a transcript summarization job based on the input parameters and return the job name.
+
+    Args:
+        transcript_id (str): The transcript id to summarize
+        summary_type (str): The summary type to use
+        source_lang (str): The source language
+        target_lang (str): The target language
+        context_features (Union[List[str], None]): The context features to use
+        summary_lens (List[int]): The summary lengths to use
+        api_key (str): The Wordcab api key
+
+    Returns:
+        str: The job name of the launched job
+    """
+    source = WordcabTranscriptSource(transcript_id=transcript_id)
+
+    summarize_job = await asyncio.get_event_loop().run_in_executor(
+        None,
+        partial(
+            start_summary,
+            source_object=source,
+            display_name="slack",
+            source_lang=source_lang,
+            target_lang=target_lang,
+            context=context_features,
+            summary_type=summary_type,
+            summary_lens=summary_lens,
+            tags=["slack", "slackbot"],
+            api_key=api_key,
+        ),
+    )
+
+    return summarize_job.job_name
+
+
+async def _url_summarization_task(
     url: str,
     summary_type: str,
     source_lang: str,
@@ -261,7 +352,7 @@ async def _summarization_task(
     api_key: str,
 ) -> str:  # pragma: no cover
     """
-    Launch a summarization job based on the input parameters and return the job name.
+    Launch an url summarization job based on the input parameters and return the job name.
 
     Args:
         url (str): The url of the file to summarize

@@ -16,6 +16,7 @@ def valid_data():
         "target_lang": "en",
         "context_features": ["issue", "purpose"],
         "urls": ["http://example.com"],
+        "transcript_ids": None,
         "msg_id": "1234",
     }
 
@@ -30,6 +31,7 @@ def invalid_urls():
         "target_lang": "en",
         "context_features": ["issue", "purpose"],
         "urls": "example.com",
+        "transcript_ids": None,
         "msg_id": "1234",
     }
 
@@ -44,6 +46,7 @@ def invalid_summary_type():
         "target_lang": "en",
         "context_features": ["issue", "purpose"],
         "urls": ["example.com"],
+        "transcript_ids": None,
         "msg_id": "1234",
     }
 
@@ -58,6 +61,7 @@ def invalid_summary_length():
         "target_lang": "en",
         "context_features": ["issue", "purpose"],
         "urls": ["example.com"],
+        "transcript_ids": None,
         "msg_id": "1234",
     }
 

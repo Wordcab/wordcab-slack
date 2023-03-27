@@ -14,7 +14,8 @@ class JobData(BaseModel):
     source_lang: str
     target_lang: str
     context_features: Union[List[str], None]
-    urls: List[str]
+    urls: Union[List[str], None]
+    transcript_ids: Union[List[str], None]
     msg_id: str
     num_tasks: Optional[int] = None
 

@@ -24,6 +24,7 @@ from wordcab_slack.utils import (
     _launch_job_tasks,
     delete_finished_jobs,
     extract_info,
+    extract_transcript_ids,
     format_files_to_upload,
     get_summarization_params,
     get_summary,
@@ -89,6 +90,7 @@ class WorcabSlackBot:
                 target_lang=params[3],
                 context_features=params[4],
                 urls=urls,
+                transcript_ids=None,
                 msg_id=msg_id,
             )
             await self._add_job_reactions(
@@ -166,6 +168,65 @@ class WorcabSlackBot:
                     thread_ts=body["event"]["ts"],
                     text=self.bot_description,
                 )
+            elif "transcript_id:":
+                try:
+                    text, _, channel, msg_id = await extract_info(body=body)
+                    text, transcript_ids = await extract_transcript_ids(text)
+                    params = await get_summarization_params(
+                        text=text,
+                        available_summary_types=self.available_summary_types,
+                    )
+
+                    job = JobData(
+                        summary_length=params[0],
+                        summary_type=params[1],
+                        source_lang=params[2],
+                        target_lang=params[3],
+                        context_features=params[4],
+                        urls=None,
+                        transcript_ids=transcript_ids,
+                        msg_id=msg_id,
+                    )
+                    await self._add_job_reactions(
+                        job.num_tasks, job.source_lang, job.target_lang, channel, msg_id
+                    )
+
+                    result = await self._process_job(job, channel, msg_id)
+                    status = result["status"]
+
+                    if status == "error":
+                        raise Exception(result["error"])
+
+                    job_names = result["job_names"]
+                    file_names = result["file_names"]
+
+                    await self._loading_reaction(channel, msg_id)
+
+                    tasks = [
+                        monitor_job_status(
+                            job_name=job_name, api_key=self.wordcab_api_key
+                        )
+                        for job_name in job_names
+                    ]
+                    for completed_task, file_name in zip(
+                        asyncio.as_completed(tasks),
+                        file_names,
+                        strict=True,
+                    ):
+                        result = await completed_task
+                        summary = await get_summary(
+                            summary_id=result, api_key=self.wordcab_api_key
+                        )
+                        await self._post_summary(summary, file_name, channel, msg_id)
+
+                    await self._final_checking_reaction(channel, msg_id)
+
+                    # await delete_finished_jobs(
+                    #     job_names=job_names, api_key=self.wordcab_api_key
+                    # )
+
+                except Exception as e:
+                    await self._error_reaction(channel, msg_id, say, str(e))
         else:
             pass
 
