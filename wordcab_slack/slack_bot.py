@@ -74,6 +74,9 @@ class WorcabSlackBot:
             say (Callable): The say function to post the summary
             logger (Callable): The logger function to log errors
         """
+        if "#botignore" in body["event"]["text"]:
+            pass
+
         # Wrap the function in a try/except block to catch any errors
         try:
             text, file_ids, channel, msg_id = await extract_info(body=body)
@@ -366,6 +369,7 @@ class WorcabSlackBot:
         await self.app.client.files_upload_v2(
             title=f"{summary.job_name} - {summary.summary_type}",
             file_uploads=file_uploads,
+            filetype="text",
             channel=channel,
             initial_comment=f"Output(s) for `{file_name}`",
             thread_ts=msg_id,
