@@ -77,63 +77,64 @@ class WorcabSlackBot:
         if "#botignore" in body["event"]["text"]:
             pass
 
-        # Wrap the function in a try/except block to catch any errors
-        try:
-            text, file_ids, channel, msg_id = await extract_info(body=body)
-            params = await get_summarization_params(
-                text=text,
-                available_summary_types=self.available_summary_types,
-            )
-            urls = await self._get_urls_from_file_ids(file_ids=file_ids)
-
-            job = JobData(
-                summary_length=params[0],
-                summary_type=params[1],
-                source_lang=params[2],
-                target_lang=params[3],
-                context_features=params[4],
-                urls=urls,
-                transcript_ids=None,
-                msg_id=msg_id,
-            )
-            await self._add_job_reactions(
-                job.num_tasks, job.source_lang, job.target_lang, channel, msg_id
-            )
-
-            result = await self._process_job(job, channel, msg_id)
-            status = result["status"]
-
-            if status == "error":
-                raise Exception(result["error"])
-
-            job_names = result["job_names"]
-            file_names = result["file_names"]
-
-            await self._loading_reaction(channel, msg_id)
-
-            tasks = [
-                monitor_job_status(job_name=job_name, api_key=self.wordcab_api_key)
-                for job_name in job_names
-            ]
-            for completed_task, file_name in zip(
-                asyncio.as_completed(tasks),
-                file_names,
-                strict=True,
-            ):
-                result = await completed_task
-                summary = await get_summary(
-                    summary_id=result, api_key=self.wordcab_api_key
+        else:
+            # Wrap the function in a try/except block to catch any errors
+            try:
+                text, file_ids, channel, msg_id = await extract_info(body=body)
+                params = await get_summarization_params(
+                    text=text,
+                    available_summary_types=self.available_summary_types,
                 )
-                await self._post_summary(summary, file_name, channel, msg_id)
+                urls = await self._get_urls_from_file_ids(file_ids=file_ids)
 
-            await self._final_checking_reaction(channel, msg_id)
+                job = JobData(
+                    summary_length=params[0],
+                    summary_type=params[1],
+                    source_lang=params[2],
+                    target_lang=params[3],
+                    context_features=params[4],
+                    urls=urls,
+                    transcript_ids=None,
+                    msg_id=msg_id,
+                )
+                await self._add_job_reactions(
+                    job.num_tasks, job.source_lang, job.target_lang, channel, msg_id
+                )
 
-            await delete_finished_jobs(
-                job_names=job_names, api_key=self.wordcab_api_key
-            )
+                result = await self._process_job(job, channel, msg_id)
+                status = result["status"]
 
-        except Exception as e:
-            await self._error_reaction(channel, msg_id, say, str(e))
+                if status == "error":
+                    raise Exception(result["error"])
+
+                job_names = result["job_names"]
+                file_names = result["file_names"]
+
+                await self._loading_reaction(channel, msg_id)
+
+                tasks = [
+                    monitor_job_status(job_name=job_name, api_key=self.wordcab_api_key)
+                    for job_name in job_names
+                ]
+                for completed_task, file_name in zip(
+                    asyncio.as_completed(tasks),
+                    file_names,
+                    strict=True,
+                ):
+                    result = await completed_task
+                    summary = await get_summary(
+                        summary_id=result, api_key=self.wordcab_api_key
+                    )
+                    await self._post_summary(summary, file_name, channel, msg_id)
+
+                await self._final_checking_reaction(channel, msg_id)
+
+                await delete_finished_jobs(
+                    job_names=job_names, api_key=self.wordcab_api_key
+                )
+
+            except Exception as e:
+                await self._error_reaction(channel, msg_id, say, str(e))
 
     async def message_changed(self, body, say, logger):
         """Delete the responses to the deleted message if any exist from the bot."""
