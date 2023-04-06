@@ -74,10 +74,7 @@ class WorcabSlackBot:
             say (Callable): The say function to post the summary
             logger (Callable): The logger function to log errors
         """
-        if "#botignore" in body["event"]["text"]:
-            pass
-
-        else:
+        if "wordcab:go" in body["event"]["text"]:  # worcab:go is the wake word
             # Wrap the function in a try/except block to catch any errors
             try:
                 text, file_ids, channel, msg_id = await extract_info(body=body)
@@ -135,6 +132,9 @@ class WorcabSlackBot:
 
             except Exception as e:
                 await self._error_reaction(channel, msg_id, say, str(e))
+
+        else:
+            pass
 
     async def message_changed(self, body, say, logger):
         """Delete the responses to the deleted message if any exist from the bot."""
