@@ -82,6 +82,7 @@ class WorcabSlackBot:
                     text=text,
                     available_summary_types=self.available_summary_types,
                 )
+                ephemeral = params[5]
                 urls = await self._get_urls_from_file_ids(file_ids=file_ids)
 
                 job = JobData(
@@ -120,15 +121,20 @@ class WorcabSlackBot:
                 ):
                     result = await completed_task
                     summary = await get_summary(
-                        summary_id=result, api_key=self.wordcab_api_key
+                        summary_id=result,
+                        api_key=self.wordcab_api_key,
+                        ephemeral=ephemeral,
                     )
-                    await self._post_summary(summary, file_name, channel, msg_id)
+                    await self._post_summary(
+                        summary, file_name, channel, msg_id, ephemeral
+                    )
 
                 await self._final_checking_reaction(channel, msg_id)
 
-                await delete_finished_jobs(
-                    job_names=job_names, api_key=self.wordcab_api_key
-                )
+                if ephemeral:
+                    await delete_finished_jobs(
+                        job_names=job_names, api_key=self.wordcab_api_key
+                    )
 
             except Exception as e:
                 await self._error_reaction(channel, msg_id, say, str(e))
@@ -355,6 +361,7 @@ class WorcabSlackBot:
         file_name: str,
         channel: str,
         msg_id: str,
+        ephemeral: bool,
     ) -> None:
         """
         Post the retrieved summaries to the thread as txt files.
@@ -364,8 +371,11 @@ class WorcabSlackBot:
             file_name (str): The name of the summarized input file
             channel (str): The channel id
             msg_id (str): The message id
+            ephemeral (bool): Whether the job is ephemeral or not
         """
-        file_uploads = await format_files_to_upload(summary=summary)
+        file_uploads = await format_files_to_upload(
+            summary=summary, ephemeral=ephemeral
+        )
 
         await self.app.client.files_upload_v2(
             title=f"{summary.job_name} - {summary.summary_type}",

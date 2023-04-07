@@ -102,12 +102,16 @@ async def extract_transcript_ids(text: str) -> Tuple[str, str]:
     return text, transcript_id
 
 
-async def format_files_to_upload(summary: BaseSummary) -> List[Dict[str, io.StringIO]]:
+async def format_files_to_upload(
+    summary: BaseSummary,
+    ephemeral: bool,
+) -> List[Dict[str, io.StringIO]]:
     """
     Format the summary to upload to Slack as a List of Dicts with the file name and the content.
 
     Args:
         summary (BaseSummary): The BaseSummary object from wordcab-python
+        ephemeral (bool): The ephemeral flag
 
     Returns:
         List[Dict[str, io.StringIO]]: The list of files to upload with their metadata
@@ -119,6 +123,9 @@ async def format_files_to_upload(summary: BaseSummary) -> List[Dict[str, io.Stri
 
     file_uploads: List[Dict[str, Union[str, io.StringIO]]] = []
     for key, val in formatted_summaries.items():
+        if ephemeral is False:
+            val = f"Transcript id: {summary.transcript_id}\n{val}"
+
         file_uploads.append(
             {
                 "filename": f"{summary_type}_{key}_{summary_id}.txt",
@@ -161,8 +168,8 @@ async def get_summarization_params(
         available_summary_types (List[str]): The list of available summary types
 
     Returns:
-        Tuple[List[int], List[str], str, bool]: The summary length, summary type, source language, target language
-        and context features
+        Tuple[List[int], List[str], str, bool]: The summary length, summary type, source language, target language,
+        context features and ephemeral flag
     """
     text = re.sub(r"<@\w+>", "", text)  # Remove the @user from the text
 
@@ -192,7 +199,21 @@ async def get_summarization_params(
     elif isinstance(context_features, list):
         context_features = context_features[0].split()[0].split(",")
 
-    return summary_length, summary_type, source_lang, target_lang, context_features
+    ephemeral = re.findall(r"ephemeral:\w+", text)
+    if not ephemeral:
+        ephemeral = True
+    elif isinstance(ephemeral, list):
+        ephemeral = ephemeral[0].split(":")[-1]
+        ephemeral = False if ephemeral == "false" else True
+
+    return (
+        summary_length,
+        summary_type,
+        source_lang,
+        target_lang,
+        context_features,
+        ephemeral,
+    )
 
 
 async def get_summary(summary_id: str, api_key: str) -> BaseSummary:  # pragma: no cover
