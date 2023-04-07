@@ -123,7 +123,6 @@ class WorcabSlackBot:
                     summary = await get_summary(
                         summary_id=result,
                         api_key=self.wordcab_api_key,
-                        ephemeral=ephemeral,
                     )
                     await self._post_summary(
                         summary, file_name, channel, msg_id, ephemeral
