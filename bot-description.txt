@@ -17,7 +17,7 @@ You can customize the summarization parameters by adding them to your message:
     ↳ The same as `source_lang`. If not specified, the output summary will be in the same language as the input text. e.g. `target_lang:fr`
 - `context`: the chosen context features to add to the output summary.
     ↳ Can be one or more between these values: `issue`, `purpose`, `next_steps`, `discussion_points` and `keywords`. Separate them with a comma (`,`) if you want to use more than one. e.g. `context:issue,purpose,keywords`.
-- `ephemeral`: whether the transcript and summaries should be deleted from Wordcab servers after the outputs are sent to Slack. By default it's `true`.
+- `ephemeral`: whether the transcript and summaries should be deleted from Wordcab servers after the outputs are sent to Slack. By default it's `true` while uploading a file and `false` while using a transcript ID.
     ↳ Can be `true` or `false`. e.g. `ephemeral:true`
 
 To choose custom parameters, add them to your message as follows:
