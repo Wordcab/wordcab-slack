@@ -3,6 +3,9 @@ Hi there! 🤗
 I'm your Wordcab Summarization assistant.
 Post any number of files in this channel and I'll summarize them for you.
 
+If you already have the transcript ID of the file you want to summarize, you can avoid uploading
+a file by sending a message with `transcript_id:xxxxxxxx` of the file you want to summarize.
+
 You can customize the summarization parameters by adding them to your message:
 - `summary_length`: the length of the output summary.
     ↳ Can be a single number or a comma-separated list of numbers between 1 and 5.
@@ -14,6 +17,8 @@ You can customize the summarization parameters by adding them to your message:
     ↳ The same as `source_lang`. If not specified, the output summary will be in the same language as the input text. e.g. `target_lang:fr`
 - `context`: the chosen context features to add to the output summary.
     ↳ Can be one or more between these values: `issue`, `purpose`, `next_steps`, `discussion_points` and `keywords`. Separate them with a comma (`,`) if you want to use more than one. e.g. `context:issue,purpose,keywords`.
+- `ephemeral`: whether the transcript and summaries should be deleted from Wordcab servers after the outputs are sent to Slack. By default it's `true`.
+    ↳ Can be `true` or `false`. e.g. `ephemeral:true`
 
 To choose custom parameters, add them to your message as follows:
 
