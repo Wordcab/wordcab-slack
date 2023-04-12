@@ -75,14 +75,13 @@ class WorcabSlackBot:
             logger (Callable): The logger function to log errors
         """
         if "wordcab:go" in body["event"]["text"]:  # worcab:go is the wake word
-            # Wrap the function in a try/except block to catch any errors
             try:
                 text, file_ids, channel, msg_id = await extract_info(body=body)
                 params = await get_summarization_params(
                     text=text,
                     available_summary_types=self.available_summary_types,
                 )
-                ephemeral = params[5]
+                ephemeral = params[5] or True
                 urls = await self._get_urls_from_file_ids(file_ids=file_ids)
 
                 job = JobData(
@@ -185,6 +184,7 @@ class WorcabSlackBot:
                         text=text,
                         available_summary_types=self.available_summary_types,
                     )
+                    ephemeral = params[5] or False
 
                     job = JobData(
                         summary_length=params[0],
@@ -226,9 +226,16 @@ class WorcabSlackBot:
                         summary = await get_summary(
                             summary_id=result, api_key=self.wordcab_api_key
                         )
-                        await self._post_summary(summary, file_name, channel, msg_id)
+                        await self._post_summary(
+                            summary, file_name, channel, msg_id, ephemeral
+                        )
 
                     await self._final_checking_reaction(channel, msg_id)
+
+                    if ephemeral:
+                        await delete_finished_jobs(
+                            job_names=job_names, api_key=self.wordcab_api_key
+                        )
 
                 except Exception as e:
                     await self._error_reaction(channel, msg_id, say, str(e))

@@ -201,7 +201,7 @@ async def get_summarization_params(
 
     ephemeral = re.findall(r"ephemeral:\w+", text)
     if not ephemeral:
-        ephemeral = True
+        ephemeral = None
     elif isinstance(ephemeral, list):
         ephemeral = ephemeral[0].split(":")[-1]
         ephemeral = False if ephemeral == "false" else True
