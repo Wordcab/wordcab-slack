@@ -6,7 +6,7 @@ This open-source Slack bot allows you to summarize any number of files directly 
 
 Quick demo in video of the bot in action:
 
-https://www.loom.com/share/7b1679db016445e297dd9454084da290
+[<img src="https://cdn.loom.com/sessions/thumbnails/7b1679db016445e297dd9454084da290-with-play.gif" width="50%">](https://www.loom.com/share/7b1679db016445e297dd9454084da290 "Wordcab Slack Bot Demo")
 
 ## Features
 
