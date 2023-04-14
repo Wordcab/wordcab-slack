@@ -82,6 +82,7 @@ class WorcabSlackBot:
                     available_summary_types=self.available_summary_types,
                 )
                 ephemeral = params[5] or True
+                log.debug(params[5], ephemeral)
                 urls = await self._get_urls_from_file_ids(file_ids=file_ids)
 
                 job = JobData(
