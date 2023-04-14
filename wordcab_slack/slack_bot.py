@@ -81,7 +81,7 @@ class WorcabSlackBot:
                     text=text,
                     available_summary_types=self.available_summary_types,
                 )
-                ephemeral = params[5] or True
+                ephemeral = True if params[5] is None else params[5]
                 log.debug(f"{params[5]} - {ephemeral}")
                 urls = await self._get_urls_from_file_ids(file_ids=file_ids)
 
@@ -185,7 +185,7 @@ class WorcabSlackBot:
                         text=text,
                         available_summary_types=self.available_summary_types,
                     )
-                    ephemeral = params[5] or False
+                    ephemeral = False if params[5] is None else params[5]
 
                     job = JobData(
                         summary_length=params[0],
