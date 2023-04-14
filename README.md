@@ -4,18 +4,22 @@ Welcome to the Wordcab Summarization Slack Bot!
 
 This open-source Slack bot allows you to summarize any number of files directly within your Slack workspace using Wordcab's powerful summarization capabilities.
 
+Quick demo in video of the bot in action:
+
+https://www.loom.com/share/7b1679db016445e297dd9454084da290
+
 ## Features
 
-- Summarize files posted in the channel
-- Specify summarization parameters, such as **summary lengths**, **summary type**, **source** and **target languages**, and **context items**
-- Monitor the progress of your summarization jobs with emoji-based reactions
-- Output summaries attached as a reply to your message for easy downloading and management
+- 🗃️ Easy to use: drop a file and get a summary in a few seconds
+- 🛠️ Customization: use summarization parameters, such as **summary lengths**, **summary type**, **source** and **target languages**, and **context items**
+- ✅ Trackable: monitor the progress of your summarization jobs with emoji-based reactions
+- 🗒️ Straightforward: Output summaries attached as a reply to your message for easy downloading and management
 
 ## Installation
 
-To add this bot to your Slack workspace, follow the steps below:
+To add this bot to your Slack workspace, it involves a lot of steps, but it's worth it!
 
-_Work in progress..._
+Contact us at `thomas@wordcab.com` and we'll get you testing the bot in no time.
 
 ## Usage
 
