@@ -408,7 +408,7 @@ async def _url_summarization_task(
     url_headers = {"Authorization": f"Bearer {bot_token}"}
 
     if file_type == "audio":
-        source = AudioSource(url=url, url_headers=url_headers)
+        source = AudioSource(url=url, url_headers=url_headers, download=True)
     elif file_type == "generic":
         source = GenericSource(url=url, url_headers=url_headers)
     else:
