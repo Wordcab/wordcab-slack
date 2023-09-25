@@ -81,7 +81,6 @@ class WorcabSlackBot:
                     available_summary_types=self.available_summary_types,
                 )
                 ephemeral = True if params[5] is None else params[5]
-                log.debug(f"{params[5]} - {ephemeral}")
                 urls = await self._get_urls_from_file_ids(file_ids=file_ids)
 
                 job = JobData(
@@ -113,14 +112,13 @@ class WorcabSlackBot:
                     monitor_job_status(job_name=job_name, api_key=self.wordcab_api_key)
                     for job_name in job_names
                 ]
-                for completed_task, file_name in zip(
-                    asyncio.as_completed(tasks),
-                    file_names,
-                    strict=True,
-                ):
-                    result = await completed_task
+                for completed_task in asyncio.as_completed(tasks):
+                    result: Tuple[str, str] = await completed_task
+                    finished_job_name, summary_id = result
+                    file_name = file_names[job_names.index(finished_job_name)]
+
                     summary = await get_summary(
-                        summary_id=result,
+                        summary_id=summary_id,
                         api_key=self.wordcab_api_key,
                     )
                     await self._post_summary(
