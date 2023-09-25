@@ -92,19 +92,21 @@ async def test_launch_job_tasks(
         msg_id="123",
     )
 
-    mock_task = AsyncMock(return_value=f"{job.msg_id}")
+    mock_task = AsyncMock(return_value=tuple(f"{job.msg_id}", urls[0].split("/")[-1]))
     mocker.patch("wordcab_slack.utils._url_summarization_task", mock_task)
 
-    job_names = await _launch_job_tasks(
+    result = await _launch_job_tasks(
         job,
         accepted_audio_formats=[".mp3", ".wav"],
         accepted_generic_formats=[".txt"],
         bot_token="my_bot_token",  # noqa: S106
         api_key="my_api_key",
     )
+    job_names, file_names = result
 
-    assert len(job_names) == len(expected_tasks)
+    assert len(job_names) == len(expected_tasks) == len(file_names)
     for i in range(len(expected_tasks)):
         assert job_names[i] == f"{job.msg_id}"
+        assert file_names[i] == urls[0].split("/")[-1]
         assert list(mock_task.call_args_list[i][1].values()) == expected_tasks[i]
         assert mock_task.await_count == len(expected_tasks)
