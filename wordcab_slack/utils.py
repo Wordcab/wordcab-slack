@@ -241,7 +241,7 @@ async def _launch_job_tasks(
     accepted_generic_formats: List[str],
     bot_token: str,
     api_key: str,
-) -> List[str]:
+) -> Tuple[List[str], List[str]]:
     """
     Process the job and launch the tasks.
 
@@ -253,7 +253,7 @@ async def _launch_job_tasks(
         api_key (str): The Wordcab api key to use for the summarization
 
     Returns:
-        List[str]: The list of job names
+        Tuple[List[str], List[str]]: The list of job names and the list of file names
     """
     if job.transcript_ids:
         tasks = [
@@ -286,12 +286,16 @@ async def _launch_job_tasks(
             for summary_type in job.summary_type
             for url in job.urls
         ]
-    job_names = await asyncio.gather(*tasks)
 
-    return job_names
+    results: List[Tuple[str, str]] = await asyncio.gather(*tasks)
+    job_names, file_names = zip(*results, strict=True)
+
+    return job_names, file_names
 
 
-async def monitor_job_status(job_name: str, api_key: str) -> str:  # pragma: no cover
+async def monitor_job_status(
+    job_name: str, api_key: str
+) -> Tuple[str, str]:  # pragma: no cover
     """
     Monitor the job status and return the summary_id when the job is done.
 
@@ -300,7 +304,7 @@ async def monitor_job_status(job_name: str, api_key: str) -> str:  # pragma: no 
         api_key (str): The Wordcab api key
 
     Returns:
-        str: The summary_id of the job
+        Tuple[str, str]: The job name and the summary_id
     """
     while True:
         job = await asyncio.get_event_loop().run_in_executor(
@@ -312,9 +316,9 @@ async def monitor_job_status(job_name: str, api_key: str) -> str:  # pragma: no 
         elif job.job_status == "Error" or job.job_status == "Deleted":
             break
         else:
-            await asyncio.sleep(5)
+            await asyncio.sleep(3)
 
-    return job.summary_details["summary_id"]
+    return job_name, job.summary_details["summary_id"]
 
 
 async def _transcript_summarization_task(
@@ -325,7 +329,7 @@ async def _transcript_summarization_task(
     context_features: Union[List[str], None],
     summary_lens: List[int],
     api_key: str,
-) -> str:  # pragma: no cover
+) -> Tuple[str, str]:  # pragma: no cover
     """
     Launch a transcript summarization job based on the input parameters and return the job name.
 
@@ -339,7 +343,7 @@ async def _transcript_summarization_task(
         api_key (str): The Wordcab api key
 
     Returns:
-        str: The job name of the launched job
+        Tuple[str, str]: The job name of the launched job and the transcript id
     """
     source = WordcabTranscriptSource(transcript_id=transcript_id)
 
@@ -359,7 +363,7 @@ async def _transcript_summarization_task(
         ),
     )
 
-    return summarize_job.job_name
+    return summarize_job.job_name, transcript_id
 
 
 async def _url_summarization_task(
@@ -373,7 +377,7 @@ async def _url_summarization_task(
     accepted_generic_formats: List[str],
     bot_token: str,
     api_key: str,
-) -> str:  # pragma: no cover
+) -> Tuple[str, str]:  # pragma: no cover
     """
     Launch an url summarization job based on the input parameters and return the job name.
 
@@ -393,10 +397,11 @@ async def _url_summarization_task(
         Exception: If the file extension is not supported
 
     Returns:
-        str: The job name of the summarization job launched
+        Tuple[str, str]: The job name of the launched job and the file name
     """
+    filename = url.split("/")[-1]
     file_type = await _check_file_extension(
-        filename=url.split("/")[-1],
+        filename=filename,
         accepted_audio_formats=accepted_audio_formats,
         accepted_generic_formats=accepted_generic_formats,
     )
@@ -431,4 +436,4 @@ async def _url_summarization_task(
         ),
     )
 
-    return summarize_job.job_name
+    return summarize_job.job_name, filename

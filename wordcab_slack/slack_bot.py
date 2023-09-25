@@ -2,7 +2,7 @@
 """Slack bot for Wordcab summarization service."""
 
 import asyncio
-from typing import Dict, List, Union
+from typing import Dict, List, Tuple, Union
 
 from loguru import logger as log
 from slack_bolt.async_app import AsyncApp
@@ -20,7 +20,6 @@ from wordcab_slack.config import (
 )
 from wordcab_slack.models import JobData
 from wordcab_slack.utils import (
-    _get_file_names,
     _launch_job_tasks,
     delete_finished_jobs,
     extract_info,
@@ -218,14 +217,13 @@ class WorcabSlackBot:
                         )
                         for job_name in job_names
                     ]
-                    for completed_task, file_name in zip(
-                        asyncio.as_completed(tasks),
-                        file_names,
-                        strict=True,
-                    ):
-                        result = await completed_task
+                    for completed_task in asyncio.as_completed(tasks):
+                        result: Tuple[str, str] = await completed_task
+                        finished_job_name, summary_id = result
+                        file_name = file_names[job_names.index(finished_job_name)]
+
                         summary = await get_summary(
-                            summary_id=result, api_key=self.wordcab_api_key
+                            summary_id=summary_id, api_key=self.wordcab_api_key
                         )
                         await self._post_summary(
                             summary, file_name, channel, msg_id, ephemeral
@@ -486,20 +484,24 @@ class WorcabSlackBot:
 
             for job in job_batch:
                 try:
-                    job_names = await _launch_job_tasks(
+                    result: Tuple[List[str]] = await _launch_job_tasks(
                         job=job["data"],
                         accepted_audio_formats=self.accepted_audio_formats,
                         accepted_generic_formats=self.accepted_generic_formats,
                         bot_token=self.slack_bot_token,
                         api_key=self.wordcab_api_key,
                     )
-                    file_names = await _get_file_names(data=job["data"])
+
+                    job_names, file_names = result
                     job["status"] = "success"
                     job["job_names"] = job_names
                     job["file_names"] = file_names
+
                 except Exception as e:
                     job["status"] = "error"
                     job["error"] = str(e)
+
                 finally:
                     job["done_event"].set()
+
             del job_batch
