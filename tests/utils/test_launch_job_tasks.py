@@ -92,7 +92,7 @@ async def test_launch_job_tasks(
         msg_id="123",
     )
 
-    mock_task = AsyncMock(return_value=tuple(f"{job.msg_id}", urls[0].split("/")[-1]))
+    mock_task = AsyncMock(return_value=(f"{job.msg_id}", urls[0].split("/")[-1]))
     mocker.patch("wordcab_slack.utils._url_summarization_task", mock_task)
 
     result = await _launch_job_tasks(
