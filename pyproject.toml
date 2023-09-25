@@ -6,7 +6,7 @@ authors = ["Thomas Chaigneau <thomas@wordcab.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.10,<4.0"
+python = ">=3.10,<3.12"
 aiohttp = ">=3.8.4"
 fastapi = ">=0.94.0"
 loguru = ">=0.6.0"
